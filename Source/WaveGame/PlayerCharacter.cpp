@@ -69,6 +69,9 @@ void APlayerCharacter::MoveForward(float Value)
 		FVector Direction = FRotationMatrix(NewYawRotation).GetUnitAxis(EAxis::X);
 		UE_LOG(LogTemp, Warning, TEXT("Current Direction %f - %f - %f"), Direction.X, Direction.Y, Direction.Z);
 
+		// another way to get forward direction of an object is Rotation.Vector()
+		// which is similar to blueprint method called RotationFromXVector
+
 		AddMovementInput(Direction, Value);
 
 
@@ -97,7 +100,7 @@ void APlayerCharacter::MousePitch(float Value)
 	APlayerController* PC = Cast<APlayerController>(Controller);
 	FRotator WorldControlRotation = GetControlRotation().GetNormalized();
 
-	UE_LOG(LogTemp, Warning, TEXT("World Pitch - %f"), WorldControlRotation.Pitch);
+	UE_LOG(LogTemp, Warning, TEXT("World Pitch - %f"), GetControlRotation().Pitch);
 
 	const float ScaledInput = Value * PC->InputPitchScale;
 	const float PitchSum = WorldControlRotation.Pitch + ScaledInput;

@@ -44,4 +44,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// need a feature to boost movement speed and overtime the speed gets reduced. Use lerping for that
+
 };
