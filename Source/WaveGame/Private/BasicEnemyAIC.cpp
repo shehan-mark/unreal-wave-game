@@ -32,11 +32,16 @@ void ABasicEnemyAIC::OnPossess(APawn* InPawn)
 			BlackBoardComponent->InitializeBlackboard(*BasicEnemy->BehaviorTreeRef->BlackboardAsset);
 			
 			BlackBoardComponent->SetValueAsObject(FName("SelfActor"), InPawn);
-			BlackBoardComponent->SetValueAsVector(FName("TargetDestination"), FVector(0.0f, 0.0f, 0.0f));
 
 			BehaviorTreeComponent->StartTree(*BasicEnemy->BehaviorTreeRef);
 		}
 
 	}
 
+}
+
+void ABasicEnemyAIC::MovePawnToLocation(FVector Location)
+{
+	BlackBoardComponent->SetValueAsVector(FName("TargetDestination"), Location);
+	MoveToLocation(Location);
 }

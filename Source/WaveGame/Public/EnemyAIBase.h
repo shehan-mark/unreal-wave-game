@@ -22,6 +22,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBehaviorTree* BehaviorTreeRef;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+	class UHealthComponentBase* EnemyHealthComponent;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

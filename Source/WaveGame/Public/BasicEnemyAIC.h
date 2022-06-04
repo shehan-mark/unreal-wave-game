@@ -28,6 +28,7 @@ public:
 
 	virtual void OnPossess(APawn* InPawn) override;
 
-
+	UFUNCTION(BlueprintCallable)
+	void MovePawnToLocation(FVector Location = FVector(0.0f, 0.0f, 0.0f));
 
 };

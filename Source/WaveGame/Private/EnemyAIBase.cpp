@@ -4,6 +4,7 @@
 #include "EnemyAIBase.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "HealthComponentBase.h"
 
 // Sets default values
 AEnemyAIBase::AEnemyAIBase()
@@ -16,6 +17,7 @@ AEnemyAIBase::AEnemyAIBase()
 
 	RootComponent = MeshComponent;
 
+	EnemyHealthComponent = CreateDefaultSubobject<UHealthComponentBase>(TEXT("EnemyHealthComponent"));
 
 	FloatingPawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovementComponent"));
 	FloatingPawnMovementComponent->MaxSpeed = 600.f;
