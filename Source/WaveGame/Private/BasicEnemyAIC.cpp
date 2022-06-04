@@ -6,7 +6,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
-#include "BasicEnemy.h"
+#include "EnemyAIBase.h"
+
 
 ABasicEnemyAIC::ABasicEnemyAIC()
 {
@@ -23,16 +24,19 @@ void ABasicEnemyAIC::OnPossess(APawn* InPawn)
 	UE_LOG(LogTemp, Warning, TEXT("ABasicEnemyAIC::OnPossess called"));
 	if (InPawn != nullptr)
 	{
-		//FString ObjectName = InPawn->GetName();
-		ABasicEnemy* BasicEnemy = Cast<ABasicEnemy>(InPawn);
+		FString ObjectName = InPawn->GetName();
+		AEnemyAIBase* BasicEnemy = Cast<AEnemyAIBase>(InPawn);
 		if (BasicEnemy && BasicEnemy->BehaviorTreeRef != nullptr)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("ABasicEnemyAIC::OnPossess - InPawn Not Null"));
 			BlackBoardComponent->InitializeBlackboard(*BasicEnemy->BehaviorTreeRef->BlackboardAsset);
-			BlackBoardComponent->SetValueAsVector(FName("TargetDestination"), FVector(0.f, 0.f, 0.f));
+			
+			BlackBoardComponent->SetValueAsObject(FName("SelfActor"), InPawn);
+			BlackBoardComponent->SetValueAsVector(FName("TargetDestination"), FVector(0.0f, 0.0f, 0.0f));
 
 			BehaviorTreeComponent->StartTree(*BasicEnemy->BehaviorTreeRef);
 		}
+
 	}
 
 }
