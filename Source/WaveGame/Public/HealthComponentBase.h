@@ -14,8 +14,11 @@ class WAVEGAME_API UHealthComponentBase : public UActorComponent
 
 public:	
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HealthComponent")
+	UPROPERTY( BlueprintReadOnly, Category = "HealthComponent")
 	float Health;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HealthComponent")
+	float DefaultHealth;
 
 protected:
 	// Called when the game starts
@@ -25,5 +28,7 @@ public:
 	// Sets default values for this component's properties
 	UHealthComponentBase();
 
+	UFUNCTION()
+	void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 		
 };
