@@ -2,6 +2,7 @@
 
 
 #include "HealthComponentBase.h"
+#include "BasicProjectileDamage.h"
 
 // Sets default values for this component's properties
 UHealthComponentBase::UHealthComponentBase()
@@ -33,10 +34,16 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 {
 	if (Damage <= 0.0f)
 	{
-		return;
+		//return;
 	}
 
-	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
+	UBasicProjectileDamage* CustomDamageType = (UBasicProjectileDamage*)DamageType;
+	if (CustomDamageType)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UHealthComponentBase::HandleTakeAnyDamage CASTING SUCCESS"));
+	}
+
+	Health = FMath::Clamp(Health - CustomDamageType->ProjectileDamageAmount, 0.0f, DefaultHealth);
 
 
 	FString LogMessage = GetOwner()->GetName() + " " + FString::SanitizeFloat(Health);

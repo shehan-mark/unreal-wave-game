@@ -5,6 +5,9 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "EnemyAIBase.h"
+#include "BasicProjectileDamage.h"
 
 // Sets default values
 ABasicProjectile::ABasicProjectile()
@@ -55,7 +58,17 @@ void ABasicProjectile::Tick(float DeltaTime)
 void ABasicProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 
-	UE_LOG(LogTemp, Error, TEXT("ABasicProjectile::OnHit %s"), *OtherActor->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("ABasicProjectile::OnHit %s"), *OtherActor->GetName());
+	AEnemyAIBase* HitEnemy = Cast<AEnemyAIBase>(OtherActor);
+	if (HitEnemy)
+	{
+		APlayerController* Ctrl = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (Ctrl)
+		{
+			UE_LOG(LogTemp, Error, TEXT("ABasicProjectile::OnHit GOTTA DAMAGE"));
+			UGameplayStatics::ApplyDamage(HitEnemy, 50.0f, Ctrl, this, DamageType);
+		}
+	}
 	/*if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());

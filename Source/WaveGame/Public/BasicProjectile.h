@@ -21,6 +21,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* ProjectileMovement;
 
+	/*
+		TSubclassOf is used to handle object ref?
+		Where *UDamageType like would be used to handle instance of an object
+	*/
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	TSubclassOf<class UDamageType> DamageType;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -16,6 +16,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	class UStaticMeshComponent* MeshComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = "Mesh")
+	class USphereComponent* SphereComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
 	class UFloatingPawnMovement* FloatingPawnMovementComponent;
 

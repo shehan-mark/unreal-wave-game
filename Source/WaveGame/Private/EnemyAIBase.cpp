@@ -3,6 +3,7 @@
 
 #include "EnemyAIBase.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "HealthComponentBase.h"
 
@@ -16,6 +17,12 @@ AEnemyAIBase::AEnemyAIBase()
 	MeshComponent->SetCanEverAffectNavigation(false);
 
 	RootComponent = MeshComponent;
+
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+	SphereComponent->InitSphereRadius(20.f);
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	SphereComponent->SetupAttachment(MeshComponent);
 
 	EnemyHealthComponent = CreateDefaultSubobject<UHealthComponentBase>(TEXT("EnemyHealthComponent"));
 
