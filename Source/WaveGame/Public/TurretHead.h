@@ -30,6 +30,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	class UStaticMeshComponent* CylinderMeshComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> HUDWidgetRef;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

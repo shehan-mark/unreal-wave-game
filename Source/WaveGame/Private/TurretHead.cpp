@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
 
 #include "BasicProjectile.h"
 
@@ -47,6 +48,11 @@ void ATurretHead::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (HUDWidgetRef != nullptr)
+	{
+		UUserWidget* HUDWidget = CreateWidget(GetWorld(), HUDWidgetRef, FName(TEXT("CrossHairWidget")));
+		HUDWidget->AddToViewport();
+	}
 }
 
 void ATurretHead::MouseYaw(float Value)

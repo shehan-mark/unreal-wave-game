@@ -34,9 +34,15 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 {
 	if (Damage <= 0.0f)
 	{
-		//return;
+		return;
 	}
 
+	/*
+	*	issue I got by normal casting
+		https://stackoverflow.com/questions/48759558/a-value-of-type-const-char-cannot-be-used-to-initialize-an-entity-of-type-ch
+		issue resolved by casting like below. Dont know the difference
+		https://forums.unrealengine.com/t/c-casting-acharacter-child-pointer-to-aactor-does-not-work/405575
+	*/
 	UBasicProjectileDamage* CustomDamageType = (UBasicProjectileDamage*)DamageType;
 	if (CustomDamageType)
 	{
@@ -45,6 +51,10 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 
 	Health = FMath::Clamp(Health - CustomDamageType->ProjectileDamageAmount, 0.0f, DefaultHealth);
 
+	if (Health == 0.0f)
+	{
+		//this->Destrory
+	}
 
 	FString LogMessage = GetOwner()->GetName() + " " + FString::SanitizeFloat(Health);
 	// *FString because we need to convert that into character array

@@ -22,11 +22,25 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
 	class UFloatingPawnMovement* FloatingPawnMovementComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+	class UHealthComponentBase* EnemyHealthComponent;
+
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBehaviorTree* BehaviorTreeRef;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
-	class UHealthComponentBase* EnemyHealthComponent;
+	bool ShouldStartMovement;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	float MovementForce;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	bool bUseVelocityChange;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	float RequiredDistanceToTarget;
+
+	UPROPERTY()
+	FVector NextLocation;
 
 protected:
 	// Called when the game starts or when spawned
@@ -40,4 +54,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void MoveEnemy();
+
+	FVector GetNextPathPoint();
 };
