@@ -28,20 +28,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBehaviorTree* BehaviorTreeRef;
 
-	bool ShouldStartMovement;
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	float MovementForce;
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	bool bUseVelocityChange;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	float RequiredDistanceToTarget;
-
-	UPROPERTY()
-	FVector NextLocation;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -54,7 +40,4 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void MoveEnemy();
-
-	FVector GetNextPathPoint();
 };

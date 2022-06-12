@@ -31,6 +31,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float MovementStoppingRadius;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+	bool bShouldStopMoving;
+
 	UPROPERTY()
 	FVector NextPathPoint;
 
@@ -50,9 +53,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void MovePawnToLocation(FVector Location = FVector(0.0f, 0.0f, 0.0f));
-
-	UFUNCTION(BlueprintCallable)
-	void StartEnemyMovement(bool ShouldStart);
 
 	FVector GetNextPathPoint();
 

@@ -30,6 +30,7 @@ ABasicEnemyAIC::ABasicEnemyAIC()
 	bUseVelocityChange = false;
 	MovementStoppingRadius = 100.0f;
 
+	bShouldStopMoving = false;
 	//Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 }
 
@@ -42,8 +43,9 @@ void ABasicEnemyAIC::OnPossess(APawn* InPawn)
 	{
 		CurrentPawn = Cast<AEnemyAIBase>(InPawn);
 		
-		// should be Target's location here
-		NextPathPoint = FVector(0.0f, 0.0f, 0.0f);
+		// We use CurrentPawn Current location as when the MoveAlong task starts it thinks that AI pawn has reached one NextPathPoint
+		// Therefore it should request a new NextPathPoint
+		NextPathPoint = CurrentPawn->GetActorLocation();
 
 		FString ObjectName = InPawn->GetName();
 		AEnemyAIBase* BasicEnemy = Cast<AEnemyAIBase>(InPawn);
@@ -73,13 +75,6 @@ void ABasicEnemyAIC::MovePawnToLocation(FVector Location)
 	// BlackBoardComponent->SetValueAsVector(FName("TargetDirection"), ForceDirection);
 }
 
-/*
-	Handling movement by AI itself. Which is bad for my design
-*/
-void ABasicEnemyAIC::StartEnemyMovement(bool ShouldStart)
-{
-	CurrentPawn->ShouldStartMovement = ShouldStart;
-}
 
 FVector ABasicEnemyAIC::GetNextPathPoint()
 {
@@ -98,20 +93,29 @@ FVector ABasicEnemyAIC::GetNextPathPoint()
 
 void ABasicEnemyAIC::MoveAlongThePath()
 {
-	float DistanceToTarget = (CurrentPawn->GetActorLocation() - NextPathPoint).Size();
+	FVector TargetLocation = FVector(0.0f, 0.0f, 0.0f);
+	FVector CurrentPawnLocation = CurrentPawn->GetActorLocation();
+	float DistanceToTarget = (TargetLocation - CurrentPawnLocation).Size();
+	if (DistanceToTarget < MovementStoppingRadius)
+	{
+		bShouldStopMoving = true;
+		return;
+	}
 
-	if (DistanceToTarget > MovementStoppingRadius)
+	float DistanceToNextPathPoint = (NextPathPoint - CurrentPawnLocation).Size();
+	if (DistanceToNextPathPoint < MovementStoppingRadius)
 	{
 		NextPathPoint = GetNextPathPoint();
-		DrawDebugSphere(GetWorld(), NextPathPoint, 20, 26, FColor::Red, true, -1, 0, 2);
+		//DrawDebugSphere(GetWorld(), NextPathPoint, 10, 26, FColor::Red, true, -1, 0, 2);
 	}
 	else
 	{
-		FVector ForceDirection = NextPathPoint - CurrentPawn->GetActorLocation();
+		FVector ForceDirection = (NextPathPoint - CurrentPawnLocation);
 		ForceDirection.Normalize();
-		ForceDirection *= 1000.f;
+		ForceDirection *= MovementForce;
 
-		DrawDebugDirectionalArrow(GetWorld(), CurrentPawn->GetActorLocation(), CurrentPawn->GetActorLocation() + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
+		//DrawDebugDirectionalArrow(GetWorld(), CurrentPawnLocation, CurrentPawnLocation + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
 		CurrentPawn->SphereComponent->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
 	}
+
 }
