@@ -29,10 +29,10 @@ ABasicEnemyAIC::ABasicEnemyAIC()
 	// this is what tells our behavior tree what to do
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
 
+	bShouldStopMovement = false;
 	MovementStoppingRadius = 100.0f;
 	bEnemyReachedPoint = false;
 	TargetPointReachThreshold = 1.0f;
-
 	//Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 }
 
@@ -58,6 +58,7 @@ void ABasicEnemyAIC::OnPossess(APawn* InPawn)
 			
 			BlackBoardComponent->SetValueAsObject(FName("SelfActor"), InPawn);
 			BlackBoardComponent->SetValueAsVector(FName("NextPathPoint"), NextPathPoint);
+			BlackBoardComponent->SetValueAsBool(FName("ShouldStopMovement"), bShouldStopMovement);
 
 			BehaviorTreeComponent->StartTree(*BasicEnemy->BehaviorTreeRef);
 		}
@@ -81,15 +82,22 @@ void ABasicEnemyAIC::MovePawnToLocation(float DeltaSeconds)
 	FVector CurrentLocation = CurrentPawn->GetActorLocation();
 	FVector MovementDirection = (NextPathPoint - CurrentLocation);
 
-	float MovementMag = GetEnemyToTargetPointLength();
-	if (MovementMag <= TargetPointReachThreshold) // need to make this a variable 
-	//if (CurrentLocation.Equals(NextPathPoint)) // need to make this a variable 
+	float MovementMag = GetEnemyToTargetPointLength(NextPathPoint);
+	if (MovementMag <= TargetPointReachThreshold)
 	{
 		if (bLoggsEnabled)
 		{
 			UE_LOG(LogTemp, Error, TEXT("ABasicEnemyAIC::MovePawnToLocation Done Moving %f, %f, %f"), CurrentLocation.X, CurrentLocation.Y, CurrentLocation.Z);
 		}
-		bEnemyReachedPoint = true;
+		if (GetEnemyToTargetPointLength(FVector(0.f, 0.f, 0.f)) <= MovementStoppingRadius)
+		{
+			bShouldStopMovement = true;
+			BlackBoardComponent->SetValueAsBool(FName("ShouldStopMovement"), bShouldStopMovement);
+		}
+		else
+		{
+			bEnemyReachedPoint = true;
+		}
 	}
 	else
 	{
@@ -105,7 +113,7 @@ void ABasicEnemyAIC::MovePawnToLocation(float DeltaSeconds)
 
 void ABasicEnemyAIC::CheckAndUpdateNextPathPoint()
 {
-	if (GetEnemyToTargetPointLength() <= TargetPointReachThreshold)
+	if (GetEnemyToTargetPointLength(NextPathPoint) <= TargetPointReachThreshold)
 	{
 		FVector NextPoint = GetNextPathPoint();
 		if (bLoggsEnabled)
@@ -141,8 +149,17 @@ FVector ABasicEnemyAIC::GetNextPathPoint()
 
 	if (NavigationPath->PathPoints.Num() > 1)
 	{
-		// getting index 1 because 0 is always the current location.
-		FVector PathPoint = FVector(NavigationPath->PathPoints[1].X, NavigationPath->PathPoints[1].Y, CurrentEnemyLocation.Z);
+		FVector PathPoint = CurrentPawn->GetActorLocation();
+		UE_LOG(LogTemp, Error, TEXT("ABasicEnemyAIC::GetNextPathPoint Candidate PathPoint %f, %f, %f"), PathPoint.X, PathPoint.Y, PathPoint.Z);
+		for (int i = 1; i < NavigationPath->PathPoints.Num(); i++)
+		{
+			PathPoint = FVector(NavigationPath->PathPoints[i].X, NavigationPath->PathPoints[i].Y, CurrentEnemyLocation.Z);
+			if (GetEnemyToTargetPointLength(PathPoint) > TargetPointReachThreshold)
+			{
+				break;
+			}
+		}
+
 		return PathPoint;
 	}
 
@@ -175,11 +192,11 @@ void ABasicEnemyAIC::UpdateEnemyLookRotation()
 }
 
 
-float ABasicEnemyAIC::GetEnemyToTargetPointLength()
+float ABasicEnemyAIC::GetEnemyToTargetPointLength(FVector TargetPoint)
 {
-	FVector NextLocation = BlackBoardComponent->GetValueAsVector(FName("NextPathPoint"));
+	//FVector NextLocation = BlackBoardComponent->GetValueAsVector(FName("NextPathPoint"));
 	FVector CurrentEnemyLocation = CurrentPawn->GetActorLocation();
-	FVector MovingDirection = (NextLocation - CurrentEnemyLocation);
+	FVector MovingDirection = (TargetPoint - CurrentEnemyLocation);
 	float MovementMag = MovingDirection.Size();
 	if (bLoggsEnabled)
 	{

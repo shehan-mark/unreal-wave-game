@@ -32,6 +32,9 @@ public:
 	FVector NextPathPoint;
 
 	UPROPERTY()
+	bool bShouldStopMovement;
+
+	UPROPERTY()
 	APawn* Target;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -45,7 +48,7 @@ protected:
 	UPROPERTY()
 	class AEnemyAIBase* CurrentPawn;
 
-	float GetEnemyToTargetPointLength();
+	float GetEnemyToTargetPointLength(FVector TargetPoint);
 
 	void UpdateEnemyLookRotation();
 
