@@ -16,6 +16,9 @@ class WAVEGAME_API ABasicEnemyAIC : public AAIController
 	
 public:
 
+	UPROPERTY(EditDefaultsOnly, Category = "Miscellaneous")
+	bool bLoggsEnabled;
+
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBlackboardComponent* BlackBoardComponent;
 
@@ -23,16 +26,7 @@ public:
 	class UBehaviorTreeComponent* BehaviorTreeComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	float MovementForce;
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	bool bUseVelocityChange;
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float MovementStoppingRadius;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
-	bool bShouldStopMoving;
 
 	UPROPERTY()
 	FVector NextPathPoint;
@@ -40,10 +34,20 @@ public:
 	UPROPERTY()
 	APawn* Target;
 
+	UPROPERTY(BlueprintReadOnly)
+	bool bEnemyReachedPoint;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Behavior")
+	float TargetPointReachThreshold;
+
 protected:
 
 	UPROPERTY()
 	class AEnemyAIBase* CurrentPawn;
+
+	float GetEnemyToTargetPointLength();
+
+	void UpdateEnemyLookRotation();
 
 public:
 
@@ -52,11 +56,12 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 
 	UFUNCTION(BlueprintCallable)
-	void MovePawnToLocation(FVector Location = FVector(0.0f, 0.0f, 0.0f));
+	void MovePawnToLocation(float DeltaSeconds);
 
 	FVector GetNextPathPoint();
 
 	UFUNCTION(BlueprintCallable)
-	void MoveAlongThePath();
+	void CheckAndUpdateNextPathPoint();
 
+	virtual void Tick(float DeltaTime) override;
 };

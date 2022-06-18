@@ -68,6 +68,14 @@ void ABasicProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 			UE_LOG(LogTemp, Error, TEXT("ABasicProjectile::OnHit GOTTA DAMAGE"));
 			UGameplayStatics::ApplyDamage(HitEnemy, 50.0f, Ctrl, this, DamageType);
 		}
+
+		FVector HitDirection = Hit.Normal;
+
+		HitDirection.Normalize();
+		HitDirection *= -1; // to make it opposite direction
+		HitDirection *= 5000.0f;
+		UE_LOG(LogTemp, Error, TEXT("ABasicProjectile::OnHit HitDirection %f, %f, %f"), HitDirection.X, HitDirection.Y, HitDirection.Z);
+		HitEnemy->SphereComponent->AddForce(HitDirection, NAME_None, true);
 	}
 
 
