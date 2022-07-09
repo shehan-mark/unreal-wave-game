@@ -43,6 +43,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Behavior")
 	float TargetPointReachThreshold;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Behavior")
+	float EnemyMovementSpeed;
+
 protected:
 
 	UPROPERTY()
