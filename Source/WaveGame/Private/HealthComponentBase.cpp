@@ -54,6 +54,12 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 	if (Health == 0.0f)
 	{
 		//this->Destrory
+		AController* APC = GetOwner()->GetInstigatorController();
+		if (APC)
+		{
+			APC->UnPossess();
+			GetOwner()->SetLifeSpan(3.0f);
+		}
 	}
 
 	FString LogMessage = GetOwner()->GetName() + " " + FString::SanitizeFloat(Health);
