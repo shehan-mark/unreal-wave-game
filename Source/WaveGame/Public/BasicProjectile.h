@@ -28,6 +28,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TSubclassOf<class UDamageType> DamageType;
 
+	class ACharacter* ProjectileOwner;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

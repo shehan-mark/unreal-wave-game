@@ -8,6 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "EnemyAIBase.h"
 #include "BasicProjectileDamage.h"
+#include "DrawDebugHelpers.h"
+#include "TurretHead.h"
 
 // Sets default values
 ABasicProjectile::ABasicProjectile()
@@ -58,7 +60,7 @@ void ABasicProjectile::Tick(float DeltaTime)
 void ABasicProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 
-	UE_LOG(LogTemp, Warning, TEXT("ABasicProjectile::OnHit %s"), *OtherActor->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("ABasicProjectile::OnHit %s"), *OtherActor->GetName());
 	AEnemyAIBase* HitEnemy = Cast<AEnemyAIBase>(OtherActor);
 	if (HitEnemy)
 	{
@@ -69,13 +71,21 @@ void ABasicProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 			UGameplayStatics::ApplyDamage(HitEnemy, 50.0f, Ctrl, this, DamageType);
 		}
 
-		FVector HitDirection = Hit.Normal;
+		FVector EnemyCurentLocation = OtherActor->GetActorLocation();
+		FVector DamageCauserLocation = ProjectileOwner->GetActorLocation();
 
-		HitDirection.Normalize();
-		HitDirection *= -1; // to make it opposite direction
-		HitDirection *= 5000.0f;
-		UE_LOG(LogTemp, Error, TEXT("ABasicProjectile::OnHit HitDirection %f, %f, %f"), HitDirection.X, HitDirection.Y, HitDirection.Z);
-		HitEnemy->SphereComponent->AddForce(HitDirection, NAME_None, true);
+		FVector Dir = EnemyCurentLocation - FVector(0.0f, 0.0f, EnemyCurentLocation.Z);
+		Dir.Normalize();
+
+		Dir *= 200.0;
+		FVector NewPos = EnemyCurentLocation + FVector(Dir.X, Dir.Y, 0.0f);
+
+		UE_LOG(LogTemp, Error, TEXT("ABasicProjectile::OnHit New Position %f, %f, %f"), NewPos.X, NewPos.Y, NewPos.Z);
+
+		//FVector EndPosition = FVector(0.0f, 0.0f, 0.0f) * 20;
+		//DrawDebugDirectionalArrow(GetWorld(), FVector(0.0f, 0.0f, EnemyCurentLocation.Z), FVector(Dir.X, Dir.Y, EnemyCurentLocation.Z), 5.0f, FColor::Red, true, 3.0f);
+		DrawDebugDirectionalArrow(GetWorld(), FVector(0.0f, 0.0f, EnemyCurentLocation.Z), NewPos, 5.0f, FColor::Red, true, 3.0f);
+		OtherActor->SetActorLocation(NewPos);
 	}
 
 

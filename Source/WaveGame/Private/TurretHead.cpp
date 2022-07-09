@@ -113,7 +113,7 @@ FRotator ATurretHead::GetVectorForTurretDirection()
 
 	//FVector EndPosition = FVector(StartingPosition.X + 100.0f, StartingPosition.Y, StartingPosition.Z);
 	FVector EndPosition = MiddlePosition + ( DirectionVectorFromOrigin * 20 );
-	DrawDebugLine(GetWorld(), MiddlePosition, EndPosition, FColor::Red, false, 1, 0, 4);
+	DrawDebugLine(GetWorld(), MiddlePosition, EndPosition, FColor::Cyan, false, 1, 0, 4);
 
 	FVector EndVector = DirectionVectorFromOrigin;
 	return EndVector.Rotation();
@@ -146,7 +146,8 @@ void ATurretHead::Fire()
 		FActorSpawnParameters ActorSpawnParams;
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		World->SpawnActor<ABasicProjectile>(ProjectileRef, SpawnLocation, SpawnRotationTwo, ActorSpawnParams);
+		ABasicProjectile* SpawnedProjectile = World->SpawnActor<ABasicProjectile>(ProjectileRef, SpawnLocation, SpawnRotationTwo, ActorSpawnParams);
+		SpawnedProjectile->ProjectileOwner = this;
 		
 		if (FireSound != nullptr)
 		{
