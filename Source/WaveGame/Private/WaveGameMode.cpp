@@ -9,6 +9,10 @@ AWaveGameMode::AWaveGameMode()
 {
 	TimeBetweenWaves = 2.0f;
 	SpawnCircleRadius = 1000.0f;
+	MaxWaveCount = 5;
+
+	PrimaryActorTick.TickInterval = 1.0f;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AWaveGameMode::StartPlay()
@@ -18,10 +22,46 @@ void AWaveGameMode::StartPlay()
 	PrepareForNextWave();
 }
 
+void AWaveGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	CheckWaveState();
+}
+
 void AWaveGameMode::PrepareForNextWave()
 {
+	WaveStatus = WaveGameModeState::PREWAVE;
+
 	FTimerHandle TimerHandle_NextWaveStart;
 	GetWorldTimerManager().SetTimer(TimerHandle_NextWaveStart, this, &AWaveGameMode::StartWave, TimeBetweenWaves, false);	
+}
+
+void AWaveGameMode::CheckWaveState()
+{
+	/*
+		only run check logic when a wave is in progress
+	*/
+	if (WaveStatus != WaveGameModeState::WAVEINPROGRESS)
+		return;
+
+	bool bIsAnyEnemyAlive = false;
+	for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
+	{
+		APawn* _Pawn = It->Get();
+		AEnemyAIBase* Enemy = Cast<AEnemyAIBase>(_Pawn);
+		if (Enemy && Enemy->GetEnemyStatus() != EnemyState::DEAD)
+		{
+			bIsAnyEnemyAlive = true;
+			break;
+		}
+	}
+
+	if (!bIsAnyEnemyAlive)
+	{
+		EndWave();
+	}
+	
 }
 
 void AWaveGameMode::SpawnNewEnemy()
@@ -46,7 +86,9 @@ void AWaveGameMode::SpawnNewEnemy()
 
 		if (NumOfEnemiesToSpawn <= 0)
 		{
-			EndWave();
+			GetWorldTimerManager().ClearTimer(TimerHandle_EnemySpawner);
+			WaveStatus = WaveGameModeState::WAVEINPROGRESS;
+			//EndWave();
 		}
 	}
 }
@@ -59,15 +101,23 @@ void AWaveGameMode::StartWave()
 
 	NumOfEnemiesToSpawn = 2 * EnemyWaveCount;
 
+	WaveStatus = WaveGameModeState::WAVESPAWNING;
 	GetWorldTimerManager().SetTimer(TimerHandle_EnemySpawner, this, &AWaveGameMode::SpawnNewEnemy, 1.0f, true, 0.0f);
 }
 
 void AWaveGameMode::EndWave()
 {
-	UE_LOG(LogTemp, Error, TEXT("AWaveGameMode::EndWave - Ending Now..."));
+	WaveStatus = WaveGameModeState::WAVEENDED;
 
-	GetWorldTimerManager().ClearTimer(TimerHandle_EnemySpawner);
-	PrepareForNextWave();
+	if (EnemyWaveCount >= MaxWaveCount - 1)
+	{
+		WaveStatus = WaveGameModeState::GAMEOVER;
+		UE_LOG(LogTemp, Error, TEXT("AWaveGameMode::EndWave - GAME OVER..."));
+	}
+	else
+	{
+		PrepareForNextWave();
+	}
 }
 
 

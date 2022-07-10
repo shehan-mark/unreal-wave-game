@@ -6,6 +6,14 @@
 #include "GameFramework/Pawn.h"
 #include "EnemyAIBase.generated.h"
 
+UENUM()
+enum class EnemyState : uint8
+{
+	PREALIVE = 0 UMETA(DisplayName = "PREALIVE"),
+	ALIVE = 1  UMETA(DisplayName = "ALIVE"),
+	DEAD = 2     UMETA(DisplayName = "DEAD")
+};
+
 UCLASS()
 class WAVEGAME_API AEnemyAIBase : public APawn
 {
@@ -29,6 +37,10 @@ public:
 	class UBehaviorTree* BehaviorTreeRef;
 
 protected:
+
+	TEnumAsByte<EnemyState> EnemyStatus;
+
+protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -39,5 +51,9 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void SetEnemyStatus(TEnumAsByte<EnemyState> Status);
+
+	TEnumAsByte<EnemyState> GetEnemyStatus();
 
 };

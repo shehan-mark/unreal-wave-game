@@ -88,7 +88,7 @@ void ABasicEnemyAIC::MovePawnToLocation(float DeltaSeconds)
 	{
 		if (bLoggsEnabled)
 		{
-			UE_LOG(LogTemp, Error, TEXT("ABasicEnemyAIC::MovePawnToLocation Done Moving %f, %f, %f"), CurrentLocation.X, CurrentLocation.Y, CurrentLocation.Z);
+			//UE_LOG(LogTemp, Error, TEXT("ABasicEnemyAIC::MovePawnToLocation Done Moving %f, %f, %f"), CurrentLocation.X, CurrentLocation.Y, CurrentLocation.Z);
 		}
 		if (GetEnemyToTargetPointLength(FVector(0.f, 0.f, 0.f)) <= MovementStoppingRadius)
 		{

@@ -35,14 +35,14 @@ AEnemyAIBase::AEnemyAIBase()
 
 	FloatingPawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovementComponent"));
 	FloatingPawnMovementComponent->MaxSpeed = 600.f;
-
+	EnemyStatus = EnemyState::PREALIVE;
 }
 
 // Called when the game starts or when spawned
 void AEnemyAIBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	EnemyStatus = EnemyState::ALIVE;
 }
 
 // Called every frame
@@ -50,4 +50,14 @@ void AEnemyAIBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AEnemyAIBase::SetEnemyStatus(TEnumAsByte<EnemyState> Status)
+{
+	EnemyStatus = Status;
+}
+
+TEnumAsByte<EnemyState> AEnemyAIBase::GetEnemyStatus()
+{
+	return EnemyStatus;
 }

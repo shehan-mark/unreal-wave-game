@@ -3,6 +3,7 @@
 
 #include "HealthComponentBase.h"
 #include "BasicProjectileDamage.h"
+#include "EnemyAIBase.h"
 
 // Sets default values for this component's properties
 UHealthComponentBase::UHealthComponentBase()
@@ -57,6 +58,12 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 		AController* APC = GetOwner()->GetInstigatorController();
 		if (APC)
 		{
+			AEnemyAIBase* EnemyRef = Cast<AEnemyAIBase>(DamagedActor);
+			if (EnemyRef)
+			{
+				EnemyRef->SetEnemyStatus(EnemyState::DEAD);
+			}
+
 			APC->UnPossess();
 			GetOwner()->SetLifeSpan(3.0f);
 		}

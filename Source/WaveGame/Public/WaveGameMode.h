@@ -6,6 +6,16 @@
 #include "GameFramework/GameModeBase.h"
 #include "WaveGameMode.generated.h"
 
+UENUM()
+enum class WaveGameModeState : uint8
+{
+	PREWAVE = 0 UMETA(DisplayName = "PREWAVE"),
+	WAVESPAWNING = 1  UMETA(DisplayName = "WAVESPAWNING"),
+	WAVEINPROGRESS = 2     UMETA(DisplayName = "WAVEINPROGRESS"),
+	WAVEENDED = 3     UMETA(DisplayName = "WAVEENDED"),
+	GAMEOVER = 4     UMETA(DisplayName = "GAMEOVER")
+};
+
 /**
  * 
  */
@@ -28,6 +38,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
 	float SpawnCircleRadius;
 
+	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
+	int32 MaxWaveCount;
+
 protected:
 
 	/*
@@ -41,6 +54,8 @@ protected:
 	int32 NumOfEnemiesToSpawn;
 
 	int32 EnemyWaveCount;
+
+	TEnumAsByte<WaveGameModeState> WaveStatus;
 
 protected:
 
@@ -56,6 +71,9 @@ protected:
 	UFUNCTION()
 	void PrepareForNextWave();
 
+	UFUNCTION()
+	void CheckWaveState();
+
 public:
 
 	AWaveGameMode();
@@ -65,4 +83,5 @@ public:
 	*/
 	virtual void StartPlay() override;
 
+	virtual void Tick(float DeltaSeconds) override;
 };
