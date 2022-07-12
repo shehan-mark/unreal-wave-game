@@ -9,6 +9,7 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/SphereComponent.h"
 
 #include "BasicProjectile.h"
 
@@ -24,6 +25,10 @@ ATurretHead::ATurretHead()
 	BoxMeshComponent->SetupAttachment(RootComponent);
 	CylinderMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CylinderMeshComponent"));
 	CylinderMeshComponent->SetupAttachment(BoxMeshComponent);
+
+	EnemyNotifierSphere = CreateDefaultSubobject<USphereComponent>(TEXT("EnemyNotifierSphere"));
+	EnemyNotifierSphere->InitSphereRadius(200.0f);
+	EnemyNotifierSphere->SetupAttachment(RootComponent);
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;

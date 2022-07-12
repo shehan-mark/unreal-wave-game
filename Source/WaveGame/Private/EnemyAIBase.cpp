@@ -43,6 +43,14 @@ void AEnemyAIBase::BeginPlay()
 {
 	Super::BeginPlay();
 	EnemyStatus = EnemyState::ALIVE;
+
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyAIBase::OnCollisionOverlap);
+}
+
+void AEnemyAIBase::OnCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("AEnemyAIBase::OnCollisionOverlap - Overlapped Actor %s"), *OtherActor->GetName());
+	EnemyStatus = EnemyState::ATTACK;
 }
 
 // Called every frame
