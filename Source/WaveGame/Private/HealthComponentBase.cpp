@@ -11,6 +11,7 @@ UHealthComponentBase::UHealthComponentBase()
 
 	DefaultHealth = 100;
 	Health = DefaultHealth;
+	LifeSpanAfterDeath = 3.0f;
 }
 
 
@@ -65,7 +66,7 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 			}
 
 			APC->UnPossess();
-			GetOwner()->SetLifeSpan(3.0f);
+			GetOwner()->SetLifeSpan(LifeSpanAfterDeath);
 		}
 	}
 

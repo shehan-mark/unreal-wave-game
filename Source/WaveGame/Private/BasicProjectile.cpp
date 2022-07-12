@@ -39,6 +39,8 @@ ABasicProjectile::ABasicProjectile()
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
+
+	EnemyKnockbackAmount = 200.0f;
 }
 
 // Called when the game starts or when spawned
@@ -77,7 +79,7 @@ void ABasicProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 		FVector Dir = EnemyCurentLocation - FVector(0.0f, 0.0f, EnemyCurentLocation.Z);
 		Dir.Normalize();
 
-		Dir *= 200.0;
+		Dir *= EnemyKnockbackAmount;
 		FVector NewPos = EnemyCurentLocation + FVector(Dir.X, Dir.Y, 0.0f);
 
 		UE_LOG(LogTemp, Error, TEXT("ABasicProjectile::OnHit New Position %f, %f, %f"), NewPos.X, NewPos.Y, NewPos.Z);
@@ -88,11 +90,4 @@ void ABasicProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 		OtherActor->SetActorLocation(NewPos);
 	}
 
-
-	/*if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
-	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
-		Destroy();
-	}*/
 }

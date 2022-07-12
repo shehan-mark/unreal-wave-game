@@ -28,6 +28,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TSubclassOf<class UDamageType> DamageType;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float EnemyKnockbackAmount;
+
 	class ACharacter* ProjectileOwner;
 
 protected:

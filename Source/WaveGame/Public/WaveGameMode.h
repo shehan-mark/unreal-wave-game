@@ -41,6 +41,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
 	int32 MaxWaveCount;
 
+	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
+	int32 EnemyWaveMultiplier;
+
 protected:
 
 	/*

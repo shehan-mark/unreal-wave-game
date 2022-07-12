@@ -10,8 +10,9 @@ UENUM()
 enum class EnemyState : uint8
 {
 	PREALIVE = 0 UMETA(DisplayName = "PREALIVE"),
-	ALIVE = 1  UMETA(DisplayName = "ALIVE"),
-	DEAD = 2     UMETA(DisplayName = "DEAD")
+	ALIVE = 1 UMETA(DisplayName = "ALIVE"),
+	DEAD = 2 UMETA(DisplayName = "DEAD"),
+	ATTACK = 3 UMETA(DisplayName = "ATTACK")
 };
 
 UCLASS()

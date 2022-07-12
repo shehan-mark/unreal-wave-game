@@ -10,6 +10,7 @@ AWaveGameMode::AWaveGameMode()
 	TimeBetweenWaves = 2.0f;
 	SpawnCircleRadius = 1000.0f;
 	MaxWaveCount = 5;
+	EnemyWaveMultiplier = 2;
 
 	PrimaryActorTick.TickInterval = 1.0f;
 	PrimaryActorTick.bCanEverTick = true;
@@ -99,7 +100,7 @@ void AWaveGameMode::StartWave()
 
 	EnemyWaveCount++;
 
-	NumOfEnemiesToSpawn = 2 * EnemyWaveCount;
+	NumOfEnemiesToSpawn = EnemyWaveMultiplier * EnemyWaveCount;
 
 	WaveStatus = WaveGameModeState::WAVESPAWNING;
 	GetWorldTimerManager().SetTimer(TimerHandle_EnemySpawner, this, &AWaveGameMode::SpawnNewEnemy, 1.0f, true, 0.0f);
