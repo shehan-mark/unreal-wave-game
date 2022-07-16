@@ -11,7 +11,6 @@ UHealthComponentBase::UHealthComponentBase()
 
 	DefaultHealth = 100;
 	Health = DefaultHealth;
-	LifeSpanAfterDeath = 3.0f;
 }
 
 
@@ -48,29 +47,18 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 	UBasicProjectileDamage* CustomDamageType = (UBasicProjectileDamage*)DamageType;
 	if (CustomDamageType)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UHealthComponentBase::HandleTakeAnyDamage CASTING SUCCESS"));
+		//UE_LOG(LogTemp, Error, TEXT("UHealthComponentBase::HandleTakeAnyDamage CASTING SUCCESS"));
 	}
 
 	Health = FMath::Clamp(Health - CustomDamageType->ProjectileDamageAmount, 0.0f, DefaultHealth);
 
 	if (Health == 0.0f)
 	{
-		//this->Destrory
-		AController* APC = GetOwner()->GetInstigatorController();
-		if (APC)
-		{
-			AEnemyAIBase* EnemyRef = Cast<AEnemyAIBase>(DamagedActor);
-			if (EnemyRef)
-			{
-				EnemyRef->SetEnemyStatus(EnemyState::DEAD);
-			}
-
-			APC->UnPossess();
-			GetOwner()->SetLifeSpan(LifeSpanAfterDeath);
-		}
+		AEnemyAIBase* EnemyRef = Cast<AEnemyAIBase>(DamagedActor);
+		EnemyRef->Die();
 	}
 
 	FString LogMessage = GetOwner()->GetName() + " " + FString::SanitizeFloat(Health);
 	// *FString because we need to convert that into character array
-	UE_LOG(LogTemp, Log, TEXT("Health Changed: %s"), *LogMessage);
+	//UE_LOG(LogTemp, Log, TEXT("Health Changed: %s"), *LogMessage);
 }

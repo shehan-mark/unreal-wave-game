@@ -58,7 +58,7 @@ protected:
 
 	int32 EnemyWaveCount;
 
-	TEnumAsByte<WaveGameModeState> WaveStatus;
+	WaveGameModeState WaveStatus;
 
 protected:
 

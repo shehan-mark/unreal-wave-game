@@ -74,11 +74,11 @@ void AWaveGameMode::SpawnNewEnemy()
 
 		// finding spawn location in the circle
 		float Theta = FMath::DegreesToRadians(FMath::RandRange(0.0f, 359.0f));
-		UE_LOG(LogTemp, Warning, TEXT("AWaveGameMode::SpawnNewEnemy - Theta %f"), Theta);
+		//UE_LOG(LogTemp, Warning, TEXT("AWaveGameMode::SpawnNewEnemy - Theta %f"), Theta);
 		float XCoordinate = FMath::Cos(Theta) * SpawnCircleRadius;
 		float YCoordinate = FMath::Sin(Theta) * SpawnCircleRadius;
-		UE_LOG(LogTemp, Warning, TEXT("AWaveGameMode::SpawnNewEnemy - XCoordinate %f"), XCoordinate);
-		UE_LOG(LogTemp, Warning, TEXT("AWaveGameMode::SpawnNewEnemy - YCoordinate %f"), YCoordinate);
+		/*UE_LOG(LogTemp, Warning, TEXT("AWaveGameMode::SpawnNewEnemy - XCoordinate %f"), XCoordinate);
+		UE_LOG(LogTemp, Warning, TEXT("AWaveGameMode::SpawnNewEnemy - YCoordinate %f"), YCoordinate);*/
 
 		AEnemyAIBase* SpawnedEnemy = GetWorld()->SpawnActor<AEnemyAIBase>(SpawnEnemy, FVector(XCoordinate, YCoordinate, 20.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
 
@@ -96,7 +96,7 @@ void AWaveGameMode::SpawnNewEnemy()
 
 void AWaveGameMode::StartWave()
 {
-	UE_LOG(LogTemp, Error, TEXT("AWaveGameMode::StartWave - Starting Now..."));
+	//UE_LOG(LogTemp, Error, TEXT("AWaveGameMode::StartWave - Starting Now..."));
 
 	EnemyWaveCount++;
 
@@ -113,7 +113,7 @@ void AWaveGameMode::EndWave()
 	if (EnemyWaveCount >= MaxWaveCount - 1)
 	{
 		WaveStatus = WaveGameModeState::GAMEOVER;
-		UE_LOG(LogTemp, Error, TEXT("AWaveGameMode::EndWave - GAME OVER..."));
+		//UE_LOG(LogTemp, Error, TEXT("AWaveGameMode::EndWave - GAME OVER..."));
 	}
 	else
 	{

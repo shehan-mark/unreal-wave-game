@@ -5,13 +5,15 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
-#include "HealthComponentBase.h"
 
 #include "NavigationSystem.h" 
 #include "NavigationPath.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+
+#include "HealthComponentBase.h"
 #include "DrawDebugHelpers.h"
+#include "BasicEnemyAIC.h"
 
 // Sets default values
 AEnemyAIBase::AEnemyAIBase()
@@ -35,14 +37,16 @@ AEnemyAIBase::AEnemyAIBase()
 
 	FloatingPawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovementComponent"));
 	FloatingPawnMovementComponent->MaxSpeed = 600.f;
-	EnemyStatus = EnemyState::PREALIVE;
+
+	LifeSpanAfterDeath = 3.0f;
+	DamageAmount = 5.0f;
 }
 
 // Called when the game starts or when spawned
 void AEnemyAIBase::BeginPlay()
 {
 	Super::BeginPlay();
-	EnemyStatus = EnemyState::ALIVE;
+	EnemyStatus = EnemyState::IDLE;
 
 	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyAIBase::OnCollisionOverlap);
 }
@@ -50,7 +54,12 @@ void AEnemyAIBase::BeginPlay()
 void AEnemyAIBase::OnCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UE_LOG(LogTemp, Warning, TEXT("AEnemyAIBase::OnCollisionOverlap - Overlapped Actor %s"), *OtherActor->GetName());
-	EnemyStatus = EnemyState::ATTACK;
+
+	CurrentDamageTarget = Cast<ACharacter>(OtherActor);
+	if (CurrentDamageTarget)
+	{
+		EnemyStatus = EnemyState::ATTACK;
+	}
 }
 
 // Called every frame
@@ -60,12 +69,33 @@ void AEnemyAIBase::Tick(float DeltaTime)
 
 }
 
-void AEnemyAIBase::SetEnemyStatus(TEnumAsByte<EnemyState> Status)
+void AEnemyAIBase::SetEnemyStatus(EnemyState Status)
 {
 	EnemyStatus = Status;
 }
 
-TEnumAsByte<EnemyState> AEnemyAIBase::GetEnemyStatus()
+EnemyState AEnemyAIBase::GetEnemyStatus()
 {
 	return EnemyStatus;
+}
+
+void AEnemyAIBase::DoDamage()
+{
+	ABasicEnemyAIC* Ctrl = Cast<ABasicEnemyAIC>(GetController());
+	if (Ctrl)
+	{
+		UE_LOG(LogTemp, Error, TEXT("AEnemyAIBase::DoDamage Damaging Player..."));
+		UGameplayStatics::ApplyDamage(CurrentDamageTarget, DamageAmount, Ctrl, this, DamageType);
+	}
+}
+
+void AEnemyAIBase::Die()
+{
+	AController* APC = GetController();
+	if (APC)
+	{
+		SetEnemyStatus(EnemyState::DEAD);
+		APC->UnPossess();
+		SetLifeSpan(LifeSpanAfterDeath);
+	}
 }

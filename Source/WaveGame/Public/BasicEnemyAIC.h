@@ -37,6 +37,9 @@ public:
 	UPROPERTY()
 	APawn* Target;
 
+	/*
+		we use this value in BTT stop or exit from Enemy Move 
+	*/
 	UPROPERTY(BlueprintReadOnly)
 	bool bEnemyReachedPoint;
 
@@ -68,6 +71,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void CheckAndUpdateNextPathPoint();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackTarget();
 
 	virtual void Tick(float DeltaTime) override;
 };

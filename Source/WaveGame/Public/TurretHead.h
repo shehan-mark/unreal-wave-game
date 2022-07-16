@@ -34,7 +34,7 @@ public:
 	TSubclassOf<UUserWidget> HUDWidgetRef;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Detector")
-	class USphereComponent* EnemyNotifierSphere;
+	class UBoxComponent* EnemyNotifierBox;
 
 protected:
 	// Called when the game starts or when spawned

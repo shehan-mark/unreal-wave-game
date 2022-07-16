@@ -20,8 +20,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HealthComponent")
 	float DefaultHealth;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HealthComponent")
-	float LifeSpanAfterDeath;
 
 protected:
 	// Called when the game starts

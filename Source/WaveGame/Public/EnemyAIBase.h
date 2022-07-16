@@ -6,11 +6,11 @@
 #include "GameFramework/Pawn.h"
 #include "EnemyAIBase.generated.h"
 
-UENUM()
+UENUM(BlueprintType)
 enum class EnemyState : uint8
 {
-	PREALIVE = 0 UMETA(DisplayName = "PREALIVE"),
-	ALIVE = 1 UMETA(DisplayName = "ALIVE"),
+	IDLE = 0 UMETA(DisplayName = "IDLE"),
+	MOVING = 1 UMETA(DisplayName = "MOVING"),
 	DEAD = 2 UMETA(DisplayName = "DEAD"),
 	ATTACK = 3 UMETA(DisplayName = "ATTACK")
 };
@@ -37,9 +37,21 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBehaviorTree* BehaviorTreeRef;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	class ACharacter* CurrentDamageTarget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	TSubclassOf<class UDamageType> DamageType;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	float DamageAmount;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HealthComponent")
+	float LifeSpanAfterDeath;
+
 protected:
 
-	TEnumAsByte<EnemyState> EnemyStatus;
+	EnemyState EnemyStatus;
 
 protected:
 	// Called when the game starts or when spawned
@@ -56,8 +68,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SetEnemyStatus(TEnumAsByte<EnemyState> Status);
+	void SetEnemyStatus(EnemyState Status);
 
-	TEnumAsByte<EnemyState> GetEnemyStatus();
+	EnemyState GetEnemyStatus();
+
+	void DoDamage();
+
+	void Die();
 
 };

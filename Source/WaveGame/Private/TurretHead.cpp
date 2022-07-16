@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 
 #include "BasicProjectile.h"
 
@@ -26,9 +27,10 @@ ATurretHead::ATurretHead()
 	CylinderMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CylinderMeshComponent"));
 	CylinderMeshComponent->SetupAttachment(BoxMeshComponent);
 
-	EnemyNotifierSphere = CreateDefaultSubobject<USphereComponent>(TEXT("EnemyNotifierSphere"));
-	EnemyNotifierSphere->InitSphereRadius(200.0f);
-	EnemyNotifierSphere->SetupAttachment(RootComponent);
+	EnemyNotifierBox = CreateDefaultSubobject<UBoxComponent>(TEXT("EnemyNotifierBox"));
+	EnemyNotifierBox->SetBoxExtent(FVector(100.f, 100.f, 100.f));
+	EnemyNotifierBox->SetCollisionProfileName(TEXT("EnemyNotifier"));
+	EnemyNotifierBox->SetupAttachment(RootComponent);
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -79,7 +81,7 @@ void ATurretHead::MousePitch(float Value)
 FVector ATurretHead::GetNormalizedVector(FVector Input)
 {
 	float Magnitude = FMath::Sqrt(FMath::Pow(Input.X, 2) + FMath::Pow(Input.Y, 2) + FMath::Pow(Input.Y, 2));
-	UE_LOG(LogTemp, Warning, TEXT("ATurretHead::GetNormalizedVector - Magnitude %f"), Magnitude);
+	//UE_LOG(LogTemp, Warning, TEXT("ATurretHead::GetNormalizedVector - Magnitude %f"), Magnitude);
 
 	return FVector(Input.X / Magnitude, Input.Y / Magnitude, Input.Z / Magnitude);
 }
@@ -89,14 +91,14 @@ void ATurretHead::CalculateTurretPitchVectors()
 	// logging location of the object
 	FVector ActorLocation = GetActorLocation();
 	FVector AxisVector = FVector(ActorLocation.X, 0.0f, 0.0f);
-	UE_LOG(LogTemp, Error, TEXT("ATurretHead::BeginPlay - Actor Location %f, %f, %f"), ActorLocation.X, ActorLocation.Y, ActorLocation.Z);
+	//UE_LOG(LogTemp, Error, TEXT("ATurretHead::BeginPlay - Actor Location %f, %f, %f"), ActorLocation.X, ActorLocation.Y, ActorLocation.Z);
 
 
 	FVector NormalizedVector = GetNormalizedVector(GetActorForwardVector());
-	UE_LOG(LogTemp, Warning, TEXT("ATurretHead::BeginPlay - NormalizedVector %f, %f, %f"), NormalizedVector.X, NormalizedVector.Y, NormalizedVector.Z);
+	//UE_LOG(LogTemp, Warning, TEXT("ATurretHead::BeginPlay - NormalizedVector %f, %f, %f"), NormalizedVector.X, NormalizedVector.Y, NormalizedVector.Z);
 
 	FVector ScaledVector = NormalizedVector * 500;
-	UE_LOG(LogTemp, Warning, TEXT("ATurretHead::BeginPlay - ScaledVector %f, %f, %f"), ScaledVector.X, ScaledVector.Y, ScaledVector.Z);
+	//UE_LOG(LogTemp, Warning, TEXT("ATurretHead::BeginPlay - ScaledVector %f, %f, %f"), ScaledVector.X, ScaledVector.Y, ScaledVector.Z);
 
 
 	FVector ScaledVecotrHeight = ScaledVector + FVector(ScaledVector.X, ScaledVector.Y, ScaledVector.Z - 150.0f);
@@ -133,7 +135,7 @@ void ATurretHead::Fire()
 	{
 		UWorld* const World = GetWorld();
 		if (World == nullptr) return;
-		UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire"));
+		//UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire"));
 
 		const FVector SpawnLocation = CylinderMeshComponent->GetSocketLocation("ShootingPoint");
 		//UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire - ShootingPoint %f, %f, %f"), SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z);
@@ -144,8 +146,8 @@ void ATurretHead::Fire()
 		const FRotator SpawnRotationOne = GetControlRotation();
 		const FRotator SpawnRotationTwo = GetVectorForTurretDirection();
 
-		UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire - SpawnRotationOne %f, %f, %f"), SpawnRotationOne.Pitch, SpawnRotationOne.Yaw, SpawnRotationOne.Roll);
-		UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire - SpawnRotationTwo %f, %f, %f"), SpawnRotationTwo.Pitch, SpawnRotationTwo.Yaw, SpawnRotationTwo.Roll);
+		/*UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire - SpawnRotationOne %f, %f, %f"), SpawnRotationOne.Pitch, SpawnRotationOne.Yaw, SpawnRotationOne.Roll);
+		UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire - SpawnRotationTwo %f, %f, %f"), SpawnRotationTwo.Pitch, SpawnRotationTwo.Yaw, SpawnRotationTwo.Roll);*/
 
 
 		FActorSpawnParameters ActorSpawnParams;
