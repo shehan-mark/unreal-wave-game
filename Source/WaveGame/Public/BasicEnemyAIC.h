@@ -54,6 +54,13 @@ protected:
 	UPROPERTY()
 	class AEnemyAIBase* CurrentPawn;
 
+	/*
+		enemy current objective
+	*/
+	FVector CurrentGoalLocation;
+
+protected:
+
 	float GetEnemyToTargetPointLength(FVector TargetPoint);
 
 	void UpdateEnemyLookRotation();

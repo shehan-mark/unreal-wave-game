@@ -47,11 +47,15 @@ void ABasicEnemyAIC::OnPossess(APawn* InPawn)
 	{
 		CurrentPawn = Cast<AEnemyAIBase>(InPawn);
 		
-		// We use CurrentPawn Current location as when the MoveAlong task starts it thinks that AI pawn has reached one NextPathPoint
-		// Therefore it should request a new NextPathPoint
+		CurrentGoalLocation = FVector(0.0f, 0.0f, CurrentPawn->GetActorLocation().Z);
+		
+		/*
+			initial next path point is the current location
+			therefore in the first move check AIC think it already reached the NextPathPoint
+			and start calculating the new pathpoint
+		*/
 		NextPathPoint = CurrentPawn->GetActorLocation();
 
-		FString ObjectName = InPawn->GetName();
 		if (CurrentPawn && CurrentPawn->BehaviorTreeRef != nullptr)
 		{
 			BlackBoardComponent->InitializeBlackboard(*CurrentPawn->BehaviorTreeRef->BlackboardAsset);
@@ -59,9 +63,8 @@ void ABasicEnemyAIC::OnPossess(APawn* InPawn)
 			BlackBoardComponent->SetValueAsObject(FName("SelfActor"), InPawn);
 			BlackBoardComponent->SetValueAsVector(FName("NextPathPoint"), NextPathPoint);
 			BlackBoardComponent->SetValueAsBool(FName("ShouldStopMovement"), bShouldStopMovement);
-			// set enemy status in the behavior tree as well
-
-			/* start behavior tree execution */
+			
+			
 			BehaviorTreeComponent->StartTree(*CurrentPawn->BehaviorTreeRef);
 		}
 
