@@ -6,6 +6,14 @@
 #include "GameFramework/Character.h"
 #include "TurretHead.generated.h"
 
+
+UENUM(BlueprintType)
+enum class TurretState : uint8
+{
+	ALIVE = 0 UMETA(DisplayName = "ALIVE"),
+	DEAD = 1 UMETA(DisplayName = "DEAD")
+};
+
 UCLASS()
 class WAVEGAME_API ATurretHead : public ACharacter
 {
@@ -36,6 +44,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Detector")
 	class UBoxComponent* EnemyNotifierBox;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Health")
+	float LifeSpanAfterDeath;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+	class UHealthComponentBase* HealthComponent;
+
+protected:
+
+	TurretState TurretStatus;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -61,5 +79,11 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void Die();
+
+	TurretState GetTurretStatus();
+
+	void SetTurretStatus(TurretState State);
 
 };

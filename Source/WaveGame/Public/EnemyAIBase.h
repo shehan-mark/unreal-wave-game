@@ -38,7 +38,7 @@ public:
 	class UBehaviorTree* BehaviorTreeRef;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
-	class ACharacter* CurrentDamageTarget;
+	class ATurretHead* CurrentDamageTarget;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	TSubclassOf<class UDamageType> DamageType;
@@ -70,6 +70,7 @@ public:
 
 	void SetEnemyStatus(EnemyState Status);
 
+	UFUNCTION(BlueprintCallable)
 	EnemyState GetEnemyStatus();
 
 	void DoDamage();

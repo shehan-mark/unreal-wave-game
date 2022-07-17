@@ -31,7 +31,7 @@ public:
 	UPROPERTY()
 	FVector NextPathPoint;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	bool bShouldStopMovement;
 
 	UPROPERTY()
@@ -41,7 +41,7 @@ public:
 		we use this value in BTT stop or exit from Enemy Move 
 	*/
 	UPROPERTY(BlueprintReadOnly)
-	bool bEnemyReachedPoint;
+	bool bEnemyReachedCurrentTarget;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Behavior")
 	float TargetPointReachThreshold;
@@ -49,10 +49,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Behavior")
 	float EnemyMovementSpeed;
 
+	UPROPERTY(BlueprintReadOnly)
+	class AEnemyAIBase* CurrentPawn;
+
 protected:
 
-	UPROPERTY()
-	class AEnemyAIBase* CurrentPawn;
 
 	/*
 		enemy current objective
@@ -81,6 +82,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackTarget();
+
+	UFUNCTION(BlueprintCallable)
+	void FindAndMakeTarget();
 
 	virtual void Tick(float DeltaTime) override;
 };

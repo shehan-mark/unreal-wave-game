@@ -14,6 +14,7 @@
 #include "HealthComponentBase.h"
 #include "DrawDebugHelpers.h"
 #include "BasicEnemyAIC.h"
+#include "TurretHead.h"
 
 // Sets default values
 AEnemyAIBase::AEnemyAIBase()
@@ -55,7 +56,7 @@ void AEnemyAIBase::OnCollisionOverlap(UPrimitiveComponent* OverlappedComponent, 
 {
 	UE_LOG(LogTemp, Warning, TEXT("AEnemyAIBase::OnCollisionOverlap - Overlapped Actor %s"), *OtherActor->GetName());
 
-	CurrentDamageTarget = Cast<ACharacter>(OtherActor);
+	CurrentDamageTarget = Cast<ATurretHead>(OtherActor);
 	if (CurrentDamageTarget)
 	{
 		EnemyStatus = EnemyState::ATTACK;
@@ -84,7 +85,7 @@ void AEnemyAIBase::DoDamage()
 	ABasicEnemyAIC* Ctrl = Cast<ABasicEnemyAIC>(GetController());
 	if (Ctrl)
 	{
-		UE_LOG(LogTemp, Error, TEXT("AEnemyAIBase::DoDamage Damaging Player..."));
+		//UE_LOG(LogTemp, Error, TEXT("AEnemyAIBase::DoDamage Damaging Player..."));
 		UGameplayStatics::ApplyDamage(CurrentDamageTarget, DamageAmount, Ctrl, this, DamageType);
 	}
 }

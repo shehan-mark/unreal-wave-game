@@ -12,6 +12,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
 
+#include "HealthComponentBase.h"
 #include "BasicProjectile.h"
 
 // Sets default values
@@ -45,6 +46,9 @@ ATurretHead::ATurretHead()
 	TurretCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("TurretCamera"));
 	TurretCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TurretCamera->bUsePawnControlRotation = false;
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponentBase>(TEXT("HealthComponent"));
+	LifeSpanAfterDeath = 3.0f;
 
 	// Take control of the default player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -184,3 +188,23 @@ void ATurretHead::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("LMB", IE_Pressed, this, &ATurretHead::Fire);
 }
 
+void ATurretHead::Die()
+{
+	AController* PCtrl = GetController();
+	if (PCtrl)
+	{
+		TurretStatus = TurretState::DEAD;
+		PCtrl->UnPossess();
+		this->SetLifeSpan(LifeSpanAfterDeath);
+	}
+}
+
+TurretState ATurretHead::GetTurretStatus()
+{
+	return TurretStatus;
+}
+
+void ATurretHead::SetTurretStatus(TurretState State)
+{
+	TurretStatus = State;
+}
