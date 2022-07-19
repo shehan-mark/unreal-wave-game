@@ -56,7 +56,7 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 
 	UE_LOG(LogTemp, Log, TEXT("TRYING TO CHANGE HEALTH - HEALTH %f"), Health);
 	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
-	UE_LOG(LogTemp, Log, TEXT("TRYING TO CHANGE HEALTH - DAMAGED HEALTH %f"), (Health - Damage));
+	UE_LOG(LogTemp, Log, TEXT("TRYING TO CHANGE HEALTH - DAMAGED HEALTH %f"), Health);
 
 	if (Health == 0.0f)
 	{

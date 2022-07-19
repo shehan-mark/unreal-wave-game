@@ -41,6 +41,7 @@ AEnemyAIBase::AEnemyAIBase()
 
 	LifeSpanAfterDeath = 3.0f;
 	DamageAmount = 5.0f;
+	AttackRate = 2.0f;
 }
 
 // Called when the game starts or when spawned

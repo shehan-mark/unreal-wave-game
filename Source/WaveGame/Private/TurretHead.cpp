@@ -194,8 +194,8 @@ void ATurretHead::Die()
 	if (PCtrl)
 	{
 		TurretStatus = TurretState::DEAD;
-		PCtrl->UnPossess();
 		this->SetLifeSpan(LifeSpanAfterDeath);
+		PCtrl->UnPossess();
 	}
 }
 

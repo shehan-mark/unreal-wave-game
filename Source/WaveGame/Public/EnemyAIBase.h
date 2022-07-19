@@ -46,6 +46,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	float DamageAmount;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	float AttackRate;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HealthComponent")
 	float LifeSpanAfterDeath;
 

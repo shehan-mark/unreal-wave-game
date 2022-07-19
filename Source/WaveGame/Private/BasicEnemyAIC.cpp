@@ -15,6 +15,7 @@
 #include "Components/SphereComponent.h"
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
+#include "TimerManager.h"
 
 #include "EnemyAIBase.h"
 #include "TurretHead.h"
@@ -76,6 +77,12 @@ void ABasicEnemyAIC::OnPossess(APawn* InPawn)
 	}
 }
 
+void ABasicEnemyAIC::UpdateCurrentGoalLocation()
+{
+	// for now this will be a zero vector. But if are going to have more turrets. This will be helpful
+	CurrentGoalLocation = FVector::ZeroVector;
+}
+
 void ABasicEnemyAIC::FindAndMakeTarget()
 {
 	/*
@@ -83,7 +90,7 @@ void ABasicEnemyAIC::FindAndMakeTarget()
 	* need find next/ closest target logic here
 	* 
 	*/
-	if (CurrentGoalLocation != CurrentPawn->GetActorLocation() && !bShouldStopMovement)
+	if (!CurrentGoalLocation.IsZero() && CurrentGoalLocation != CurrentPawn->GetActorLocation() && !bShouldStopMovement)
 	{
 		NextPathPoint = GetNextPathPoint();
 		BlackBoardComponent->SetValueAsVector(FName("NextPathPoint"), NextPathPoint);
@@ -91,6 +98,12 @@ void ABasicEnemyAIC::FindAndMakeTarget()
 		UpdateEnemyLookRotation();
 		bEnemyReachedCurrentTarget = false;
 		CurrentPawn->SetEnemyStatus(EnemyState::MOVING);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ABasicEnemyAIC::FindAndMakeTarget ELSE Part"));
+
+		// otherwise just wonder since we cant even find a target
 	}
 }
 
@@ -115,17 +128,24 @@ void ABasicEnemyAIC::UpdateEnemyLookRotation()
 	CurrentPawn->SetActorRotation(FinalRotation);
 }
 
+void ABasicEnemyAIC::StartAttack()
+{
+	GetWorldTimerManager().SetTimer(TimerHandle_EnemyAttack, this, &ABasicEnemyAIC::AttackTarget, CurrentPawn->AttackRate, true, 0.0f);
+}
+
 void ABasicEnemyAIC::AttackTarget()
 {
 	bool bCloseEnoughToDoDamage = GetEnemyToTargetPointLength(CurrentGoalLocation) <= MovementStoppingRadius;
-	//UE_LOG(LogTemp, Error, TEXT("ABasicEnemyAIC::AttackTarget Attacking... %s - %f"), (bCloseEnoughToDoDamage ? TEXT("TRUE"): TEXT("FALSE")), GetEnemyToTargetPointLength(CurrentGoalLocation));
+	/*TurretState NowState = CurrentPawn->CurrentDamageTarget->GetTurretStatus();
+	FString Str = UEnum::GetValueAsString(NowState);
+	UE_LOG(LogTemp, Error, TEXT("ATTACKING TARGET %s"), *Str);*/
 	if (bCloseEnoughToDoDamage && CurrentPawn->CurrentDamageTarget->GetTurretStatus() != TurretState::DEAD)
 	{
-		// attack
 		CurrentPawn->DoDamage();
 	}
 	else
 	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_EnemyAttack);
 		CurrentPawn->SetEnemyStatus(EnemyState::IDLE);
 		bEnemyReachedCurrentTarget = false;
 		bShouldStopMovement = false;
@@ -170,20 +190,6 @@ void ABasicEnemyAIC::MovePawnToLocation(float DeltaSeconds)
 
 		CurrentPawn->SetActorLocation(CurrentLocation + FVector(AddedSpeedLocaiton.X, AddedSpeedLocaiton.Y, 0.0f));
 	}
-}
-
-void ABasicEnemyAIC::CheckAndUpdateNextPathPoint()
-{
-	//if (GetEnemyToTargetPointLength(NextPathPoint) <= TargetPointReachThreshold)
-	//{
-	//	NextPathPoint = GetNextPathPoint();
-	//	UpdateEnemyLookRotation();
-	//	BlackBoardComponent->SetValueAsVector(FName("NextPathPoint"), NextPathPoint);
-
-	//	// Now enemy has new location. So enemy has not reached to the given point
-	//	bEnemyReachedPoint = false;
-	//	CurrentPawn->SetEnemyStatus(EnemyState::MOVING);
-	//}
 }
 
 FVector ABasicEnemyAIC::GetNextPathPoint()

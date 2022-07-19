@@ -60,11 +60,20 @@ protected:
 	*/
 	FVector CurrentGoalLocation;
 
+	FTimerHandle TimerHandle_EnemyAttack;
+
 protected:
 
 	float GetEnemyToTargetPointLength(FVector TargetPoint);
 
 	void UpdateEnemyLookRotation();
+
+	FVector GetNextPathPoint();
+
+	/*
+	* Find new target as new next goal
+	*/
+	void UpdateCurrentGoalLocation();
 
 public:
 
@@ -75,16 +84,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void MovePawnToLocation(float DeltaSeconds);
 
-	FVector GetNextPathPoint();
-
-	UFUNCTION(BlueprintCallable)
-	void CheckAndUpdateNextPathPoint();
-
 	UFUNCTION(BlueprintCallable)
 	void AttackTarget();
 
 	UFUNCTION(BlueprintCallable)
 	void FindAndMakeTarget();
+	
+	UFUNCTION(BlueprintCallable)
+	void StartAttack();
 
 	virtual void Tick(float DeltaTime) override;
 };
