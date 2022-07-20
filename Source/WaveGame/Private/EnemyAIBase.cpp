@@ -98,6 +98,7 @@ void AEnemyAIBase::Die()
 	{
 		SetEnemyStatus(EnemyState::DEAD);
 		APC->UnPossess();
+		APC->SetLifeSpan(LifeSpanAfterDeath);
 		SetLifeSpan(LifeSpanAfterDeath);
 	}
 }
