@@ -14,6 +14,7 @@
 
 #include "HealthComponentBase.h"
 #include "BasicProjectile.h"
+#include "WaveGameInstance.h"
 
 // Sets default values
 ATurretHead::ATurretHead()
@@ -61,8 +62,8 @@ void ATurretHead::BeginPlay()
 
 	if (HUDWidgetRef != nullptr)
 	{
-		UUserWidget* HUDWidget = CreateWidget(GetWorld(), HUDWidgetRef, FName(TEXT("CrossHairWidget")));
-		HUDWidget->AddToViewport();
+		/*UUserWidget* HUDWidget = CreateWidget(GetWorld(), HUDWidgetRef, FName(TEXT("CrossHairWidget")));
+		HUDWidget->AddToViewport();*/
 	}
 }
 

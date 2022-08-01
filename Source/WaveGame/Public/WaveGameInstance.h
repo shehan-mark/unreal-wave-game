@@ -13,8 +13,17 @@ UCLASS()
 class WAVEGAME_API UWaveGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-	
+
 public:
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UMasterView> MasterViewRef;
+	
+	class UMasterView* SpawnedMasterView;
+
+public:
+
+	virtual void Init() override;
 
 	void InitiateHud();
 
