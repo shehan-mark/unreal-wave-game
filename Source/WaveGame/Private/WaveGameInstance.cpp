@@ -2,27 +2,37 @@
 
 
 #include "WaveGameInstance.h"
+
 #include "MasterView.h"
+#include "Blueprint/UserWidget.h"
+#include "UObject/ConstructorHelpers.h"
+
+UWaveGameInstance::UWaveGameInstance(const FObjectInitializer& ObjectIntializer)
+{
+	if (MasterViewRef == nullptr) return;
+}
 
 void UWaveGameInstance::Init()
 {
-	UE_LOG(LogTemp, Warning, TEXT("GAME INSTANCE IS RUNNING"));
+	UE_LOG(LogTemp, Warning, TEXT("GAME INSTANCE INIT..."));
 
 }
 
-void UWaveGameInstance::InitiateHud()
+void UWaveGameInstance::InitiateUI()
 {
-	UE_LOG(LogTemp, Error, TEXT("CALLING THIS -------------------------"));
-
 	if (MasterViewRef != nullptr)
 	{
-		SpawnedMasterView = CreateWidget<UMasterView>(this, UMasterView::StaticClass());
+		UMasterView* WidgetCreated = CreateWidget<UMasterView>(this, UMasterView::StaticClass());
+		WidgetCreated->AddToViewport();
 
-		if (SpawnedMasterView)
-		{
-			UE_LOG(LogTemp, Error, TEXT("GAME INSTANCE SPAWNING VIEWPORT"));
+		APlayerController* PlayerController = GetFirstLocalPlayerController();
 
-			SpawnedMasterView->AddToViewport();
-		}
+		FInputModeUIOnly InputModeData;
+		InputModeData.SetWidgetToFocus(WidgetCreated->TakeWidget());
+		InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+
+		PlayerController->SetInputMode(InputModeData);
+
+		PlayerController->bShowMouseCursor = true;
 	}
 }

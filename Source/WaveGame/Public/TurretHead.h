@@ -38,9 +38,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	class UStaticMeshComponent* CylinderMeshComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> HUDWidgetRef;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Detector")
 	class UBoxComponent* EnemyNotifierBox;
 

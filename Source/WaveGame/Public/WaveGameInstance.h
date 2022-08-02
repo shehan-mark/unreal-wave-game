@@ -7,7 +7,7 @@
 #include "WaveGameInstance.generated.h"
 
 /**
- * 
+ * https://www.youtube.com/watch?v=XKNIQga3HYk - init UI
  */
 UCLASS()
 class WAVEGAME_API UWaveGameInstance : public UGameInstance
@@ -15,6 +15,8 @@ class WAVEGAME_API UWaveGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
+
+	UWaveGameInstance(const FObjectInitializer& ObjectIntializer);
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UMasterView> MasterViewRef;
@@ -25,7 +27,8 @@ public:
 
 	virtual void Init() override;
 
-	void InitiateHud();
+	UFUNCTION(BlueprintCallable)
+	void InitiateUI();
 
 	void StartGame();
 

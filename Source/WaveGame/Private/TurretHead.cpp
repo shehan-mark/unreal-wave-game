@@ -60,11 +60,6 @@ void ATurretHead::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HUDWidgetRef != nullptr)
-	{
-		/*UUserWidget* HUDWidget = CreateWidget(GetWorld(), HUDWidgetRef, FName(TEXT("CrossHairWidget")));
-		HUDWidget->AddToViewport();*/
-	}
 }
 
 void ATurretHead::MouseYaw(float Value)

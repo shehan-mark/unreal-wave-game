@@ -14,6 +14,16 @@ class WAVEGAME_API AWaveGamePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+public:
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UMasterView> MasterViewRef;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UUserWidget> TestingWidget;
+
+	class UMasterView* SpawnedMasterView;
+
 protected:
 
 	virtual void BeginPlay() override;
