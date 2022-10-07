@@ -8,16 +8,23 @@
 #include "MasterView.h"
 
 void AWaveGamePlayerController::BeginPlay()
-{
+{	
+	UWaveGameInstance* CurrentGameInstance = Cast<UWaveGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (CurrentGameInstance)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AWaveGamePlayerController::BeginPlay - GameInstance Check"));
+		CurrentGameInstance->InitiateUI();
+
+	}
+	
+	
+	
 	/*UE_LOG(LogTemp, Error, TEXT("CALLING THIS -------------------------"));
 	if (CurrentGameInstance)
 	{
 		CurrentGameInstance->InitiateHud();
 	}*/
 
-	UE_LOG(LogTemp, Error, TEXT("PLAYER CONTROLLER GOT INIT"));
-
-	//UWaveGameInstance* CurrentGameInstance = Cast<UWaveGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	/*if (MasterViewRef != nullptr)
 	{
 		SpawnedMasterView = CreateWidget<UMasterView>(CurrentGameInstance, UMasterView::StaticClass());

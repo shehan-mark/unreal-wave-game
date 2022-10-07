@@ -16,7 +16,7 @@ class WAVEGAME_API UMasterView : public UUserWidget
 	
 public:
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	/*UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UWidgetSwitcher* MainViewWidgetSwitcher;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
@@ -29,6 +29,6 @@ public:
 	class UChildViewBase* GameOverUI;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UChildViewBase* InGameHUD;
+	class UChildViewBase* InGameHUD;*/
 
 };

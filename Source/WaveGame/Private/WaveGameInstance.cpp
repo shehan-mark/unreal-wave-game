@@ -9,30 +9,35 @@
 
 UWaveGameInstance::UWaveGameInstance(const FObjectInitializer& ObjectIntializer)
 {
-	if (MasterViewRef == nullptr) return;
-}
+	static ConstructorHelpers::FClassFinder<UUserWidget> MasterViewWidget(TEXT("/Game/Blueprints/UI/TESTWIDGET"));
+	if (!ensure(MasterViewWidget.Class != nullptr))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UWaveGameInstance::InitiateUI - Cannot Find UI"));
+		return;
+	}
 
-void UWaveGameInstance::Init()
-{
-	UE_LOG(LogTemp, Warning, TEXT("GAME INSTANCE INIT..."));
-
+	MasterViewRef = MasterViewWidget.Class;
 }
 
 void UWaveGameInstance::InitiateUI()
 {
-	if (MasterViewRef != nullptr)
-	{
-		UMasterView* WidgetCreated = CreateWidget<UMasterView>(this, UMasterView::StaticClass());
-		WidgetCreated->AddToViewport();
+	UE_LOG(LogTemp, Warning, TEXT("UWaveGameInstance::InitiateUI - GameInstance InitiateUI Check"));
 
-		APlayerController* PlayerController = GetFirstLocalPlayerController();
+	
+	UE_LOG(LogTemp, Error, TEXT("UWaveGameInstance::InitiateUI - UI Check %s"), *MasterViewRef->GetName());
 
-		FInputModeUIOnly InputModeData;
-		InputModeData.SetWidgetToFocus(WidgetCreated->TakeWidget());
-		InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	SpawnedMasterView = CreateWidget<UUserWidget>(this, MasterViewRef);
+	SpawnedMasterView->AddToViewport();
 
-		PlayerController->SetInputMode(InputModeData);
+	/* Get player controller reference */
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
 
-		PlayerController->bShowMouseCursor = true;
-	}
+	/* Setup input parameters to the SetInputMode function */
+	FInputModeUIOnly InputModeData;
+	InputModeData.SetWidgetToFocus(SpawnedMasterView->TakeWidget());
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+
+	/* Set input mode */
+	PlayerController->SetInputMode(InputModeData);
+	PlayerController->bShowMouseCursor = true;
 }
