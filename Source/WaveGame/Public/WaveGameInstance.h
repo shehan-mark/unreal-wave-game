@@ -18,16 +18,12 @@ public:
 
 	UWaveGameInstance(const FObjectInitializer& ObjectIntializer);
 
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<class UUserWidget> MasterViewRef;
+	TSubclassOf<class UMasterView> MasterViewRef;
 	
-	class UUserWidget* SpawnedMasterView;
+	class UMasterView* SpawnedMasterView;
 
 public:
 
-	//virtual void Init() override;
-
-	UFUNCTION(BlueprintCallable)
 	void InitiateUI();
 	
 };

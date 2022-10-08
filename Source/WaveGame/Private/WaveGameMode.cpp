@@ -16,11 +16,16 @@ AWaveGameMode::AWaveGameMode()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void AWaveGameMode::StartGame()
+{
+	PrepareForNextWave();
+}
+
 void AWaveGameMode::StartPlay()
 {
 	Super::StartPlay();
 
-	PrepareForNextWave();
+	//PrepareForNextWave();
 }
 
 void AWaveGameMode::Tick(float DeltaSeconds)

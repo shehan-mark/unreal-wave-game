@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "ChildViewBase.generated.h"
+#include "SubViewBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class WAVEGAME_API UChildViewBase : public UUserWidget
+class WAVEGAME_API USubViewBase : public UUserWidget
 {
 	GENERATED_BODY()
 	

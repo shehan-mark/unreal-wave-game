@@ -6,6 +6,13 @@
 #include "Blueprint/UserWidget.h"
 #include "MasterView.generated.h"
 
+
+/*
+* Event delegates
+*/
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartGame);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnQuitGame);
+
 /**
  * 
  */
@@ -16,19 +23,23 @@ class WAVEGAME_API UMasterView : public UUserWidget
 	
 public:
 
-	/*UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UWidgetSwitcher* MainViewWidgetSwitcher;
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UWidgetSwitcher* WidgetSwitcherRoot;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UChildViewBase* StartMenu;
-	
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UChildViewBase* PauseMenu;
-	
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UChildViewBase* GameOverUI;
+	class USubViewBase* StartMenu_WBP;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UChildViewBase* InGameHUD;*/
+	FOnStartGame OnStartGame;
 
+	FOnQuitGame OnQuitGame;
+
+protected:
+
+	virtual void NativeConstruct() override;
+
+	UFUNCTION()
+	void HandleStartGame();
+
+	UFUNCTION()
+	void HandleQuitGame();
 };
