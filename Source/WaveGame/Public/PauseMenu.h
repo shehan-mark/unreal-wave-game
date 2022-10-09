@@ -4,33 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "SubViewBase.h"
-#include "StartMenu.generated.h"
+#include "PauseMenu.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class WAVEGAME_API UStartMenu : public USubViewBase
+class WAVEGAME_API UPauseMenu : public USubViewBase
 {
 	GENERATED_BODY()
 
 public:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UButton* StartButton;
+	class UButton* ResumeButton;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UButton* QuitButton;
-
-protected:
-
+	class UButton* MainMenuButton;
+	
 protected:
 
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void OnStartGamePressed();
+	void OnResumeGamePressed();
 
 	UFUNCTION()
-	void OnQuitGamePressed();
+	void OnMainMenuPressed();
 };

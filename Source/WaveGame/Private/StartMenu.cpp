@@ -16,7 +16,6 @@ void UStartMenu::NativeConstruct()
 
 void UStartMenu::OnStartGamePressed()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UStartMenu::OnStartGamePressed"));
 	if (ParentViewRef != nullptr)
 	{
 		ParentViewRef->OnStartGame.Broadcast();
@@ -25,7 +24,6 @@ void UStartMenu::OnStartGamePressed()
 
 void UStartMenu::OnQuitGamePressed()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UStartMenu::OnQuitGamePressed"));
 	if (ParentViewRef != nullptr)
 	{
 		ParentViewRef->OnQuitGame.Broadcast();

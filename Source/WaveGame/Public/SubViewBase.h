@@ -13,5 +13,9 @@ UCLASS()
 class WAVEGAME_API USubViewBase : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+
+	class UMasterView* ParentViewRef;
 	
 };

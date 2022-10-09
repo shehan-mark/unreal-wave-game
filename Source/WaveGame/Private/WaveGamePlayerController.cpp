@@ -14,4 +14,23 @@ void AWaveGamePlayerController::BeginPlay()
 	{
 		CurrentGameInstance->InitiateUI();
 	}
+	
+	EnableInput(this);
+
+}
+
+void AWaveGamePlayerController::Tick(float DeltaTime)
+{
+#if WITH_EDITOR
+	if (IsInputKeyDown(EKeys::P))
+	{
+		// need to add a delay and broadcast the event. I dont want to broadcast this event multiple times
+		OnPressEscape.Broadcast();
+	}
+#else
+	if (IsInputKeyDown(EKeys::Escape))
+	{
+		OnPressEscape.Broadcast();
+	}
+#endif
 }

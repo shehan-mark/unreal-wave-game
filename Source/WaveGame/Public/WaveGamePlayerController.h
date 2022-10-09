@@ -6,6 +6,11 @@
 #include "GameFramework/PlayerController.h"
 #include "WaveGamePlayerController.generated.h"
 
+/*
+* Event delegates
+*/
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPressEscape);
+
 /**
  * 
  */
@@ -23,6 +28,13 @@ public:
 	TSubclassOf<class UUserWidget> TestingWidget;
 
 	class UMasterView* SpawnedMasterView;
+
+	UPROPERTY()
+	FOnPressEscape OnPressEscape;
+
+public:
+
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 
