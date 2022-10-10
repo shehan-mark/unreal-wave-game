@@ -18,9 +18,15 @@ void UMasterView::NativeConstruct()
 	{
 		StartMenu_WBP->ParentViewRef = this;
 	}
+	if (GameOver_WBP)
+	{
+		GameOver_WBP->ParentViewRef = this;
+	}
 
 	OnStartGame.AddDynamic(this, &UMasterView::HandleStartGame);
 	OnQuitGame.AddDynamic(this, &UMasterView::HandleQuitGame);
+	OnResumeGame.AddDynamic(this, &UMasterView::HandleResumeGame);
+	OnMainMenu.AddDynamic(this, &UMasterView::HandleBackToMainMenu);
 
 	CurrentMenuState = EMenuState::STARTMENU;
 	CurrentPlayerController = Cast<AWaveGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
@@ -71,4 +77,11 @@ void UMasterView::HandleBackToMainMenu()
 {
 	CurrentMenuState = EMenuState::STARTMENU;
 	WidgetSwitcherRoot->SetActiveWidgetIndex(0);
+}
+
+void UMasterView::HandleResumeGame()
+{
+	CurrentMenuState = EMenuState::INROUND;
+	CurrentPlayerController->SetPause(false);
+	WidgetSwitcherRoot->SetActiveWidgetIndex(1);
 }

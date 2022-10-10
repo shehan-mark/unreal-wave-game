@@ -50,6 +50,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class USubViewBase* PauseMenu_WBP;
 
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class USubViewBase* GameOver_WBP;
+
 	UPROPERTY()
 	FOnStartGame OnStartGame;
 
@@ -84,4 +87,8 @@ protected:
 	
 	UFUNCTION()
 	void HandleBackToMainMenu();
+
+	UFUNCTION()
+	void HandleResumeGame();
+
 };
