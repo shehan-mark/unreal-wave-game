@@ -9,8 +9,7 @@
 
 AWaveGamePlayerController::AWaveGamePlayerController()
 {
-	static ConstructorHelpers::FClassFinder<UUserWidget> MasterViewWidget(TEXT("/Game/Blueprints/UI/TESTWIDGET"));
-	Widget = MasterViewWidget.Class;
+
 }
 
 void AWaveGamePlayerController::BeginPlay()

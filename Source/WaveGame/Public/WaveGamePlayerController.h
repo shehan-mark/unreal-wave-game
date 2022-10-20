@@ -33,9 +33,6 @@ public:
 	FOnPressEscape OnPressEscape;
 
 	UPROPERTY()
-	TSubclassOf<class UUserWidget> Widget;
-
-	UPROPERTY()
 	class UUserWidget* SpawnedWidget;
 
 public:
