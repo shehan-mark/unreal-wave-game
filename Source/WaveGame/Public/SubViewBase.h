@@ -17,5 +17,9 @@ class WAVEGAME_API USubViewBase : public UUserWidget
 public:
 
 	class UMasterView* ParentViewRef;
+
+protected:
+
+	virtual void NativePreConstruct() override;
 	
 };

@@ -7,6 +7,12 @@
 
 #include "MasterView.h"
 
+AWaveGamePlayerController::AWaveGamePlayerController()
+{
+	static ConstructorHelpers::FClassFinder<UUserWidget> MasterViewWidget(TEXT("/Game/Blueprints/UI/TESTWIDGET"));
+	Widget = MasterViewWidget.Class;
+}
+
 void AWaveGamePlayerController::BeginPlay()
 {	
 	UWaveGameInstance* CurrentGameInstance = Cast<UWaveGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
@@ -17,20 +23,23 @@ void AWaveGamePlayerController::BeginPlay()
 	
 	EnableInput(this);
 
+	SetTickableWhenPaused(true);
 }
 
 void AWaveGamePlayerController::Tick(float DeltaTime)
 {
-#if WITH_EDITOR
-	if (IsInputKeyDown(EKeys::P))
-	{
-		// need to add a delay and broadcast the event. I dont want to broadcast this event multiple times
-		OnPressEscape.Broadcast();
-	}
-#else
-	if (IsInputKeyDown(EKeys::Escape))
-	{
-		OnPressEscape.Broadcast();
-	}
-#endif
+}
+
+void AWaveGamePlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	FInputActionBinding& PauseBinding = InputComponent->BindAction("Pause", IE_Pressed, this, &AWaveGamePlayerController::BroadcastEscape);
+	PauseBinding.bConsumeInput = true;
+	PauseBinding.bExecuteWhenPaused = true;
+}
+
+void AWaveGamePlayerController::BroadcastEscape()
+{
+	OnPressEscape.Broadcast();
 }

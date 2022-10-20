@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "Kismet/GameplayStatics.h"
 #include "WaveGameMode.h"
 #include "TimerManager.h"
 #include "EnemyAIBase.h"
+#include "BasicProjectile.h"
 
 AWaveGameMode::AWaveGameMode()
 {
@@ -127,3 +128,36 @@ void AWaveGameMode::EndWave()
 }
 
 
+void AWaveGameMode::DestroyAndStartOver()
+{
+	// this array has to be the type of AActor because GetAllActorsOfClass is not a template function
+	// so cannot pass the exact AEnemyAIBase type. Will have to cast on iteration
+	TArray<AActor*> EnemyAIs;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyAIBase::StaticClass(), EnemyAIs);
+	for (AActor* TActor : EnemyAIs)
+	{
+		AEnemyAIBase* Enemy = Cast<AEnemyAIBase>(TActor);
+
+		if (Enemy != nullptr)
+		{
+			Enemy->Destroy();
+		}
+	}
+	// find and destroy existing projectiles
+	TArray<AActor*> Projectiles;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABasicProjectile::StaticClass(), Projectiles);
+	for (AActor* TActor : Projectiles)
+	{
+		ABasicProjectile* Projectile = Cast<ABasicProjectile>(TActor);
+
+		if (Projectile != nullptr)
+		{
+			Projectile->Destroy();
+		}
+	}
+	EnemyWaveCount = 0;
+	GetWorldTimerManager().ClearTimer(TimerHandle_EnemySpawner);
+
+	// Finally prepare for the next wave/ game
+	PrepareForNextWave();
+}

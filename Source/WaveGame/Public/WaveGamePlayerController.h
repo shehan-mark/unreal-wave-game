@@ -32,11 +32,23 @@ public:
 	UPROPERTY()
 	FOnPressEscape OnPressEscape;
 
+	UPROPERTY()
+	TSubclassOf<class UUserWidget> Widget;
+
+	UPROPERTY()
+	class UUserWidget* SpawnedWidget;
+
 public:
+
+	AWaveGamePlayerController();
 
 	virtual void Tick(float DeltaTime) override;
 
 protected:
 
 	virtual void BeginPlay() override;
+
+	virtual void SetupInputComponent() override;
+
+	void BroadcastEscape();
 };

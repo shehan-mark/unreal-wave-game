@@ -3,3 +3,7 @@
 
 #include "SubViewBase.h"
 
+void USubViewBase::NativePreConstruct()
+{
+	bIsFocusable = true;
+}

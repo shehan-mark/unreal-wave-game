@@ -23,20 +23,6 @@ UWaveGameInstance::UWaveGameInstance(const FObjectInitializer& ObjectIntializer)
 
 void UWaveGameInstance::InitiateUI()
 {
-	UE_LOG(LogTemp, Error, TEXT("UWaveGameInstance::InitiateUI - UI Check %s"), *MasterViewRef->GetName());
-
 	SpawnedMasterView = CreateWidget<UMasterView>(this, MasterViewRef);
 	SpawnedMasterView->AddToViewport();
-
-	/* Get player controller reference */
-	//APlayerController* PlayerController = GetFirstLocalPlayerController();
-
-	/* Setup input parameters to the SetInputMode function */
-	/*FInputModeUIOnly InputModeData;
-	InputModeData.SetWidgetToFocus(SpawnedMasterView->TakeWidget());
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);*/
-
-	/* Set input mode */
-	/*PlayerController->SetInputMode(InputModeData);
-	PlayerController->bShowMouseCursor = true;*/
 }

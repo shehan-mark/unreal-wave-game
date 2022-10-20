@@ -81,13 +81,11 @@ public:
 
 	AWaveGameMode();
 
-	/*
-		init call
-	*/
 	virtual void StartPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
 
 	void StartGame();
 
+	void DestroyAndStartOver();
 };

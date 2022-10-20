@@ -69,12 +69,29 @@ public:
 
 	class AWaveGamePlayerController* CurrentPlayerController;
 
+	class UUserWidget* CurrentActiveWidget;
+
+public:
+
+
 protected:
 
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void HandleStartGame();
+	void StartGame();
+
+	UFUNCTION()
+	void ViewMainMenu();
+
+	UFUNCTION()
+	void PauseGame();
+
+	UFUNCTION()
+	void ResumeGame();
+
+	UFUNCTION()
+	void GameOver();
 
 	UFUNCTION()
 	void HandleQuitGame();
@@ -83,12 +100,11 @@ protected:
 	void HandleEscape();
 
 	UFUNCTION()
-	void HandleResume();
-	
-	UFUNCTION()
-	void HandleBackToMainMenu();
+	void UpdateUIToState();
 
 	UFUNCTION()
-	void HandleResumeGame();
+	void EnableUserInteractionsForUI();
 
+	UFUNCTION()
+	void DisableUserInteractionsForUI();
 };
