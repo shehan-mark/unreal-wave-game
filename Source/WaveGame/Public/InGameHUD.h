@@ -19,10 +19,17 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UProgressBar* HealthBar_HUD;
 
+	class AWaveGamePlayerController* CurrentPlayerController;
+
 public:
 
 	void SetPlayerAndSetActive();
 
-	void UpdateHealthBar();
+	UFUNCTION()
+	void UpdateHealthBar(float Health);
+
+protected:
+
+	virtual void NativeConstruct() override;
 
 };

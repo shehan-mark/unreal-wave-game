@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "TurretHead.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdate, float, HealthNow);
 
 UENUM(BlueprintType)
 enum class TurretState : uint8
@@ -46,6 +47,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 	class UHealthComponentBase* HealthComponent;
+
+	UPROPERTY()
+	FOnHealthUpdate OnHealthUpdate;
 
 protected:
 

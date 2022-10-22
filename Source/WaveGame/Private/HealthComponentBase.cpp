@@ -35,8 +35,6 @@ void UHealthComponentBase::BeginPlay()
 
 void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	UE_LOG(LogTemp, Warning, TEXT("TRYING TO CHANGE HEALTH %f"), Damage);
-
 	if (Damage <= 0.0f)
 	{
 		return;
@@ -54,10 +52,13 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 		//UE_LOG(LogTemp, Error, TEXT("UHealthComponentBase::HandleTakeAnyDamage CASTING SUCCESS"));
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("TRYING TO CHANGE HEALTH - HEALTH %f"), Health);
 	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
-	UE_LOG(LogTemp, Log, TEXT("TRYING TO CHANGE HEALTH - DAMAGED HEALTH %f"), Health);
 
+	ATurretHead* PlayerRef = Cast<ATurretHead>(DamagedActor);
+	if (PlayerRef)
+	{
+		PlayerRef->OnHealthUpdate.Broadcast(Health);
+	}
 	if (Health == 0.0f)
 	{
 		AEnemyAIBase* EnemyRef = Cast<AEnemyAIBase>(DamagedActor);
@@ -67,7 +68,6 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 		}
 		else
 		{
-			ATurretHead* PlayerRef = Cast<ATurretHead>(DamagedActor);
 			if (PlayerRef)
 			{
 				PlayerRef->Die();
@@ -76,7 +76,7 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 
 	}
 
-	FString LogMessage = GetOwner()->GetName() + " " + FString::SanitizeFloat(Health);
+	//FString LogMessage = GetOwner()->GetName() + " " + FString::SanitizeFloat(Health);
 	// *FString because we need to convert that into character array
-	UE_LOG(LogTemp, Log, TEXT("Health Changed: %s"), *LogMessage);
+	//UE_LOG(LogTemp, Log, TEXT("Health Changed: %s"), *LogMessage);
 }

@@ -35,6 +35,9 @@ public:
 	UPROPERTY()
 	class UUserWidget* SpawnedWidget;
 
+	UPROPERTY()
+	class ATurretHead* OwningPawn;
+
 public:
 
 	AWaveGamePlayerController();

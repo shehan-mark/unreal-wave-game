@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "MasterView.h"
+#include "TurretHead.h"
 
 AWaveGamePlayerController::AWaveGamePlayerController()
 {
@@ -14,6 +15,12 @@ AWaveGamePlayerController::AWaveGamePlayerController()
 
 void AWaveGamePlayerController::BeginPlay()
 {	
+	ATurretHead* TurretPawn = Cast<ATurretHead>(this->GetPawn());
+	if (TurretPawn)
+	{
+		OwningPawn = TurretPawn;
+	}
+
 	UWaveGameInstance* CurrentGameInstance = Cast<UWaveGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (CurrentGameInstance)
 	{
@@ -21,8 +28,8 @@ void AWaveGamePlayerController::BeginPlay()
 	}
 	
 	EnableInput(this);
-
 	SetTickableWhenPaused(true);
+
 }
 
 void AWaveGamePlayerController::Tick(float DeltaTime)
