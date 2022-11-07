@@ -53,13 +53,14 @@ ATurretHead::ATurretHead()
 
 	// Take control of the default player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
 }
 
 // Called when the game starts or when spawned
 void ATurretHead::BeginPlay()
 {
 	Super::BeginPlay();
-
+	OnPlayerScored.AddDynamic(this, &ATurretHead::UpdateScore);
 }
 
 void ATurretHead::MouseYaw(float Value)
@@ -212,4 +213,27 @@ void ATurretHead::Reset()
 	{
 		HealthComponent->ResetHealth();
 	}
+}
+
+void ATurretHead::UpdateScore(bool Reset)
+{
+	if (Reset)
+	{
+		Score = 0.0f;
+	}
+	else
+	{
+		Score += 10.0f;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("UPDATED SCORE %f"), Score);
+}
+
+float ATurretHead::GetScore()
+{
+	return Score;
+}
+
+void ATurretHead::ResetPlayerScore()
+{
+	Score = 0.0f;
 }

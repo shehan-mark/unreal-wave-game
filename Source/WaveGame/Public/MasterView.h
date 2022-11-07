@@ -71,6 +71,8 @@ public:
 
 	class UUserWidget* CurrentActiveWidget;
 
+	float PlayerScore;
+
 public:
 
 
@@ -110,4 +112,7 @@ protected:
 
 	UFUNCTION()
 	void BindPlayerEvents();
+
+	UFUNCTION()
+	void GetPlayerScore(bool Reset = false);
 };

@@ -18,6 +18,9 @@ public:
 
 	class UMasterView* ParentViewRef;
 
+public:
+
+
 protected:
 
 	virtual void NativePreConstruct() override;

@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdate, float, HealthNow);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDied);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerScored, bool, Reset);
 
 UENUM(BlueprintType)
 enum class TurretState : uint8
@@ -54,10 +55,15 @@ public:
 
 	UPROPERTY()
 	FOnPlayerDied OnPlayerDied;
+	
+	UPROPERTY()
+	FOnPlayerScored OnPlayerScored;
 
 protected:
 
 	TurretState TurretStatus;
+
+	float Score;
 
 protected:
 	// Called when the game starts or when spawned
@@ -74,6 +80,9 @@ protected:
 	FRotator GetVectorForTurretDirection();
 
 	void Fire();
+
+	UFUNCTION()
+	void UpdateScore(bool Reset = false);
 
 public:
 	// Sets default values for this character's properties
@@ -92,4 +101,8 @@ public:
 	void SetTurretStatus(TurretState State);
 
 	void Reset();
+
+	float GetScore();
+
+	void ResetPlayerScore();
 };

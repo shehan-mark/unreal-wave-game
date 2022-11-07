@@ -3,9 +3,11 @@
 
 #include "HealthComponentBase.h"
 #include "BasicProjectileDamage.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "TurretHead.h"
 #include "EnemyAIBase.h"
+#include "WaveGamePlayerController.h"
 
 // Sets default values for this component's properties
 UHealthComponentBase::UHealthComponentBase()
@@ -64,6 +66,8 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 		AEnemyAIBase* EnemyRef = Cast<AEnemyAIBase>(DamagedActor);
 		if (EnemyRef)
 		{
+			//UE_LOG(LogTemp, Error, TEXT("DAMAGE INSTIGATOR %s"), *InstigatedBy->GetName());
+			LetPlayerKnowEnemyKill(InstigatedBy);
 			EnemyRef->Die();
 		}
 
@@ -87,4 +91,14 @@ void UHealthComponentBase::ResetHealth()
 	{
 		PlayerRef->OnHealthUpdate.Broadcast(Health);
 	}
+}
+
+void UHealthComponentBase::LetPlayerKnowEnemyKill(AController* InstigatedBy)
+{
+	AWaveGamePlayerController* CurrentPlayerController = Cast<AWaveGamePlayerController>(InstigatedBy);
+	if (CurrentPlayerController)
+	{
+		CurrentPlayerController->OwningPawn->OnPlayerScored.Broadcast(false);
+	}
+
 }

@@ -4,11 +4,13 @@
 #include "MasterView.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetSwitcher.h"
+#include "Components/TextBlock.h" 
 
 #include "WaveGameMode.h"
 #include "SubViewBase.h"
 #include "WaveGamePlayerController.h"
 #include "TurretHead.h"
+#include "GameOverView.h"
 
 void UMasterView::NativeConstruct()
 {
@@ -43,6 +45,7 @@ void UMasterView::NativeConstruct()
 		CurrentPlayerController->OnPlayerReady.AddDynamic(this, &UMasterView::BindPlayerEvents);
 	}
 
+	PlayerScore = 0.0f;
 	// intial menu
 	ViewMainMenu();
 }
@@ -91,6 +94,9 @@ void UMasterView::StartGame()
 	if (IsValid(GameMode))
 	{
 		GameMode->DestroyAndStartOver();
+		// reseting player score
+		PlayerScore = 0.0f;
+		CurrentPlayerController->OwningPawn->ResetPlayerScore();
 	}
 	UpdateUIToState();
 }
@@ -112,6 +118,12 @@ void UMasterView::ResumeGame()
 void UMasterView::GameOver()
 {
 	CurrentMenuState = EMenuState::GAMEOVER;
+	UGameOverView* GameOverView = Cast<UGameOverView>(GameOver_WBP);
+	if (GameOverView)
+	{
+		FText TextScore = FText::FromString(FString::SanitizeFloat(PlayerScore));
+		GameOverView->ScoreTextBlock_Value->SetText(TextScore);
+	}
 	UpdateUIToState();
 }
 
@@ -167,14 +179,23 @@ void UMasterView::DisableUserInteractionsForUI()
 
 void UMasterView::BindPlayerEvents()
 {
-	CurrentPlayerController = Cast<AWaveGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if (CurrentPlayerController && IsValid(CurrentPlayerController->OwningPawn))
 	{
 		CurrentPlayerController->OwningPawn->OnPlayerDied.AddDynamic(this, &UMasterView::GameOver);
+		CurrentPlayerController->OwningPawn->OnPlayerScored.AddDynamic(this, &UMasterView::GetPlayerScore);
 	}
 }
 
 void UMasterView::HandleQuitGame()
 {
 	CurrentPlayerController->ConsoleCommand("quit");
+}
+
+void UMasterView::GetPlayerScore(bool Reset)
+{
+	if (CurrentPlayerController && IsValid(CurrentPlayerController->OwningPawn))
+	{
+		PlayerScore = CurrentPlayerController->OwningPawn->GetScore();
+		UE_LOG(LogTemp, Error, TEXT("PLAYER SCORE %f"), PlayerScore);
+	}
 }

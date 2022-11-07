@@ -9,6 +9,8 @@
 
 void UGameOverView::NativeConstruct()
 {
+	Super::NativeConstruct();
+
 	if (MainMenuButton)
 	{
 		MainMenuButton->OnClicked.AddUniqueDynamic(this, &UGameOverView::OnMainMenuPressed);

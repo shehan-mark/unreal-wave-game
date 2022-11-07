@@ -21,6 +21,9 @@ public:
 
 	class AWaveGamePlayerController* CurrentPlayerController;
 
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UTextBlock* TextBlock_ScoreValue;
+
 public:
 
 	UFUNCTION()
@@ -33,4 +36,5 @@ protected:
 
 	virtual void NativeConstruct() override;
 
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };

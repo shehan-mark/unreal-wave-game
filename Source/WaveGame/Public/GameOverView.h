@@ -22,6 +22,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UButton* MainMenuButton;
 
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UTextBlock* ScoreTextBlock_Value;
+
 protected:
 
 	virtual void NativeConstruct() override;

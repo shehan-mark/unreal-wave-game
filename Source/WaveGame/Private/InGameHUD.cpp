@@ -7,9 +7,13 @@
 
 #include "WaveGamePlayerController.h"
 #include "TurretHead.h"
+#include "Components/TextBlock.h" 
+#include "MasterView.h"
+
 
 void UInGameHUD::NativeConstruct()
 {
+	Super::NativeConstruct();
 	// Initial health status
 	HealthBar_HUD->SetPercent(1);
 
@@ -18,6 +22,13 @@ void UInGameHUD::NativeConstruct()
 	{
 		CurrentPlayerController->OnPlayerReady.AddDynamic(this, &UInGameHUD::BindPlayerEvents);
 	}
+}
+
+void UInGameHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	FText TextScore = FText::FromString(FString::SanitizeFloat(ParentViewRef->PlayerScore));
+	TextBlock_ScoreValue->SetText(TextScore);
 }
 
 void UInGameHUD::UpdateHealthBar(float Health)
