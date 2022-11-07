@@ -193,6 +193,7 @@ void ATurretHead::Die()
 		this->SetLifeSpan(LifeSpanAfterDeath);
 		PCtrl->UnPossess();
 	}
+	OnPlayerDied.Broadcast();
 }
 
 TurretState ATurretHead::GetTurretStatus()
@@ -203,4 +204,12 @@ TurretState ATurretHead::GetTurretStatus()
 void ATurretHead::SetTurretStatus(TurretState State)
 {
 	TurretStatus = State;
+}
+
+void ATurretHead::Reset()
+{
+	if (HealthComponent)
+	{
+		HealthComponent->ResetHealth();
+	}
 }

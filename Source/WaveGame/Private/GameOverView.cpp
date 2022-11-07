@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "GameOverView.h"
+
 #include "Components/Button.h"
 
-#include "GameOverView.h"
 #include "MasterView.h"
 
 void UGameOverView::NativeConstruct()

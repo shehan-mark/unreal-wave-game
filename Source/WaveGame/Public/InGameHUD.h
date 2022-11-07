@@ -23,10 +23,11 @@ public:
 
 public:
 
-	void SetPlayerAndSetActive();
-
 	UFUNCTION()
 	void UpdateHealthBar(float Health);
+
+	UFUNCTION()
+	void BindPlayerEvents();
 
 protected:
 

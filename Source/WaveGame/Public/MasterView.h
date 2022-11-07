@@ -107,4 +107,7 @@ protected:
 
 	UFUNCTION()
 	void DisableUserInteractionsForUI();
+
+	UFUNCTION()
+	void BindPlayerEvents();
 };

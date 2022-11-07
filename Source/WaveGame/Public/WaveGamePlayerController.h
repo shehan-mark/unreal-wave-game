@@ -10,6 +10,7 @@
 * Event delegates
 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPressEscape);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerReady);
 
 /**
  * 
@@ -38,6 +39,12 @@ public:
 	UPROPERTY()
 	class ATurretHead* OwningPawn;
 
+	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
+	TSubclassOf<class ATurretHead> SpawnPlayerTurret;
+
+	UPROPERTY()
+	FOnPlayerReady OnPlayerReady;
+
 public:
 
 	AWaveGamePlayerController();
@@ -51,4 +58,6 @@ protected:
 	virtual void SetupInputComponent() override;
 
 	void BroadcastEscape();
+
+	virtual void OnPossess(APawn* aPawn) override;
 };

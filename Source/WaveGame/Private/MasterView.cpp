@@ -1,13 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "MasterView.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetSwitcher.h"
 
 #include "WaveGameMode.h"
-#include "MasterView.h"
 #include "SubViewBase.h"
 #include "WaveGamePlayerController.h"
+#include "TurretHead.h"
 
 void UMasterView::NativeConstruct()
 {
@@ -39,6 +40,7 @@ void UMasterView::NativeConstruct()
 	if (CurrentPlayerController)
 	{
 		CurrentPlayerController->OnPressEscape.AddDynamic(this, &UMasterView::HandleEscape);
+		CurrentPlayerController->OnPlayerReady.AddDynamic(this, &UMasterView::BindPlayerEvents);
 	}
 
 	// intial menu
@@ -80,9 +82,7 @@ void UMasterView::ViewMainMenu()
 
 void UMasterView::StartGame()
 {
-
 	CurrentMenuState = EMenuState::INROUND;
-	UpdateUIToState();
 	if (CurrentPlayerController->IsPaused())
 	{
 		CurrentPlayerController->SetPause(false);
@@ -92,6 +92,7 @@ void UMasterView::StartGame()
 	{
 		GameMode->DestroyAndStartOver();
 	}
+	UpdateUIToState();
 }
 
 void UMasterView::PauseGame()
@@ -144,7 +145,6 @@ void UMasterView::HandleEscape()
 	}
 }
 
-
 void UMasterView::EnableUserInteractionsForUI()
 {
 	/* Setup input parameters to the SetInputMode function */
@@ -163,6 +163,15 @@ void UMasterView::DisableUserInteractionsForUI()
 	FInputModeGameOnly InputModeData;
 	CurrentPlayerController->SetInputMode(InputModeData);
 	CurrentPlayerController->bShowMouseCursor = false;
+}
+
+void UMasterView::BindPlayerEvents()
+{
+	CurrentPlayerController = Cast<AWaveGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (CurrentPlayerController && IsValid(CurrentPlayerController->OwningPawn))
+	{
+		CurrentPlayerController->OwningPawn->OnPlayerDied.AddDynamic(this, &UMasterView::GameOver);
+	}
 }
 
 void UMasterView::HandleQuitGame()

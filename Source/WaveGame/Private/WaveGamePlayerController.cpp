@@ -14,22 +14,20 @@ AWaveGamePlayerController::AWaveGamePlayerController()
 }
 
 void AWaveGamePlayerController::BeginPlay()
-{	
-	ATurretHead* TurretPawn = Cast<ATurretHead>(this->GetPawn());
-	if (TurretPawn)
-	{
-		OwningPawn = TurretPawn;
-	}
-
+{
 	UWaveGameInstance* CurrentGameInstance = Cast<UWaveGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (CurrentGameInstance)
 	{
 		CurrentGameInstance->InitiateUI();
 	}
+	ATurretHead* TurretPawn = Cast<ATurretHead>(this->GetPawn());
+	if (TurretPawn)
+	{
+		OwningPawn = TurretPawn;
+	}
 	
 	EnableInput(this);
 	SetTickableWhenPaused(true);
-
 }
 
 void AWaveGamePlayerController::Tick(float DeltaTime)
@@ -48,4 +46,16 @@ void AWaveGamePlayerController::SetupInputComponent()
 void AWaveGamePlayerController::BroadcastEscape()
 {
 	OnPressEscape.Broadcast();
+}
+
+void AWaveGamePlayerController::OnPossess(APawn* aPawn)
+{
+	Super::OnPossess(aPawn);
+	UE_LOG(LogTemp, Error, TEXT("PLAYER CONTROLLER POSSES PAWN - %s"), *aPawn->GetName());
+	ATurretHead* TurretPawn = Cast<ATurretHead>(aPawn);
+	if (TurretPawn)
+	{
+		OwningPawn = TurretPawn;
+		OnPlayerReady.Broadcast();
+	}
 }

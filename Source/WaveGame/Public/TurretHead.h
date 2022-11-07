@@ -7,6 +7,7 @@
 #include "TurretHead.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdate, float, HealthNow);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDied);
 
 UENUM(BlueprintType)
 enum class TurretState : uint8
@@ -51,6 +52,9 @@ public:
 	UPROPERTY()
 	FOnHealthUpdate OnHealthUpdate;
 
+	UPROPERTY()
+	FOnPlayerDied OnPlayerDied;
+
 protected:
 
 	TurretState TurretStatus;
@@ -87,4 +91,5 @@ public:
 
 	void SetTurretStatus(TurretState State);
 
+	void Reset();
 };

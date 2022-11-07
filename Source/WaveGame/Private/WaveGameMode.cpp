@@ -1,10 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Kismet/GameplayStatics.h"
 #include "WaveGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "EnemyAIBase.h"
 #include "BasicProjectile.h"
+#include "TurretHead.h"
+#include "WaveGamePlayerController.h"
 
 AWaveGameMode::AWaveGameMode()
 {
@@ -15,10 +17,25 @@ AWaveGameMode::AWaveGameMode()
 
 	PrimaryActorTick.TickInterval = 1.0f;
 	PrimaryActorTick.bCanEverTick = true;
+
 }
 
 void AWaveGameMode::StartGame()
 {
+	TArray<AActor*> PlayerPawn;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATurretHead::StaticClass(), PlayerPawn);
+	if (PlayerPawn.Num() == 0 && IsValid(SpawnPlayerTurret))
+	{
+		FActorSpawnParameters SpawnParams;
+		ATurretHead* NewTurretHead = GetWorld()->SpawnActor<ATurretHead>(SpawnPlayerTurret, FVector(0.0f, 0.0f, 125.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
+		
+		AWaveGamePlayerController* CurrentPlayerController = Cast<AWaveGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		
+		// it seems I dont have to call posses because this PreInitializeComponents method is being called as soon as I spawn the Pawn.
+		/*CurrentPlayerController->Possess(NewTurretHead);*/
+
+	}
+
 	PrepareForNextWave();
 }
 
@@ -155,9 +172,17 @@ void AWaveGameMode::DestroyAndStartOver()
 			Projectile->Destroy();
 		}
 	}
+	// Resetting Values and Timers
 	EnemyWaveCount = 0;
 	GetWorldTimerManager().ClearTimer(TimerHandle_EnemySpawner);
 
-	// Finally prepare for the next wave/ game
-	PrepareForNextWave();
+	// Finally start game
+	StartGame();
 }
+
+void AWaveGameMode::RestartPlayer(AController* NewPlayer)
+{
+	// do nothing here for now
+	return;
+}
+

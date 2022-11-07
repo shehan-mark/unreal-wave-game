@@ -66,12 +66,10 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 		{
 			EnemyRef->Die();
 		}
-		else
+
+		if (PlayerRef)
 		{
-			if (PlayerRef)
-			{
-				PlayerRef->Die();
-			}
+			PlayerRef->Die();
 		}
 
 	}
@@ -79,4 +77,14 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 	//FString LogMessage = GetOwner()->GetName() + " " + FString::SanitizeFloat(Health);
 	// *FString because we need to convert that into character array
 	//UE_LOG(LogTemp, Log, TEXT("Health Changed: %s"), *LogMessage);
+}
+
+void UHealthComponentBase::ResetHealth()
+{
+	Health = DefaultHealth;
+	ATurretHead* PlayerRef = Cast<ATurretHead>(GetOwner());
+	if (PlayerRef)
+	{
+		PlayerRef->OnHealthUpdate.Broadcast(Health);
+	}
 }
