@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "MasterView.generated.h"
+#include "Input/Reply.h"
 
+#include "MasterView.generated.h"
 
 /*
 * Status of Menu
@@ -115,4 +116,6 @@ protected:
 
 	UFUNCTION()
 	void GetPlayerScore(bool Reset = false);
+
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 };

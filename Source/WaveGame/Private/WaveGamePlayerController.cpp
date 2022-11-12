@@ -26,8 +26,8 @@ void AWaveGamePlayerController::BeginPlay()
 		OwningPawn = TurretPawn;
 	}
 	
-	EnableInput(this);
-	SetTickableWhenPaused(true);
+	/*EnableInput(this);
+	SetTickableWhenPaused(true);*/
 }
 
 void AWaveGamePlayerController::Tick(float DeltaTime)
@@ -51,7 +51,7 @@ void AWaveGamePlayerController::BroadcastEscape()
 void AWaveGamePlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
-	UE_LOG(LogTemp, Error, TEXT("PLAYER CONTROLLER POSSES PAWN - %s"), *aPawn->GetName());
+	//UE_LOG(LogTemp, Error, TEXT("PLAYER CONTROLLER POSSES PAWN - %s"), *aPawn->GetName());
 	ATurretHead* TurretPawn = Cast<ATurretHead>(aPawn);
 	if (TurretPawn)
 	{

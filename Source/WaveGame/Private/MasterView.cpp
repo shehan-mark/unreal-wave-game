@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/TextBlock.h" 
+#include "Input/Reply.h"
 
 #include "WaveGameMode.h"
 #include "SubViewBase.h"
@@ -34,7 +35,9 @@ void UMasterView::NativeConstruct()
 
 	OnStartGame.AddDynamic(this, &UMasterView::StartGame);
 	OnMainMenu.AddDynamic(this, &UMasterView::ViewMainMenu);
+	
 	OnResumeGame.AddDynamic(this, &UMasterView::ResumeGame);
+	
 	OnQuitGame.AddDynamic(this, &UMasterView::HandleQuitGame);
 
 	CurrentPlayerController = Cast<AWaveGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
@@ -132,28 +135,15 @@ void UMasterView::HandleEscape()
 	bool isGamePaused = CurrentPlayerController->IsPaused();
 	if (isGamePaused)
 	{
-		bool _SuccessUnPausing = CurrentPlayerController->SetPause(false);
-		if (_SuccessUnPausing)
-		{
-			CurrentMenuState = EMenuState::INROUND;
-			UpdateUIToState();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("FAILED TO UNPAUSE"));
-		}
+		CurrentMenuState = EMenuState::INROUND;
+		CurrentPlayerController->SetPause(false);
+		UpdateUIToState();
 	}
 	else
 	{
-		bool _SuccessPausing = CurrentPlayerController->SetPause(true);
-		if (_SuccessPausing)
-		{
-			PauseGame();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("FAILED TO PAUSE"));
-		}
+		CurrentMenuState = EMenuState::PAUSED;
+		CurrentPlayerController->SetPause(true);
+		UpdateUIToState();
 	}
 }
 
@@ -196,6 +186,17 @@ void UMasterView::GetPlayerScore(bool Reset)
 	if (CurrentPlayerController && IsValid(CurrentPlayerController->OwningPawn))
 	{
 		PlayerScore = CurrentPlayerController->OwningPawn->GetScore();
-		UE_LOG(LogTemp, Error, TEXT("PLAYER SCORE %f"), PlayerScore);
 	}
 }
+
+FReply UMasterView::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	Super::OnKeyDown(InGeometry, InKeyEvent);
+	if (InKeyEvent.GetKey() == EKeys::P)
+	{
+		HandleEscape();
+	}
+	return FReply::Handled();
+}
+
+
