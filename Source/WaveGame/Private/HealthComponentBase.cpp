@@ -3,9 +3,11 @@
 
 #include "HealthComponentBase.h"
 #include "BasicProjectileDamage.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "TurretHead.h"
 #include "EnemyAIBase.h"
+#include "WaveGamePlayerController.h"
 
 // Sets default values for this component's properties
 UHealthComponentBase::UHealthComponentBase()
@@ -35,8 +37,6 @@ void UHealthComponentBase::BeginPlay()
 
 void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	UE_LOG(LogTemp, Warning, TEXT("TRYING TO CHANGE HEALTH %f"), Damage);
-
 	if (Damage <= 0.0f)
 	{
 		return;
@@ -54,29 +54,51 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 		//UE_LOG(LogTemp, Error, TEXT("UHealthComponentBase::HandleTakeAnyDamage CASTING SUCCESS"));
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("TRYING TO CHANGE HEALTH - HEALTH %f"), Health);
 	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
-	UE_LOG(LogTemp, Log, TEXT("TRYING TO CHANGE HEALTH - DAMAGED HEALTH %f"), Health);
 
+	ATurretHead* PlayerRef = Cast<ATurretHead>(DamagedActor);
+	if (PlayerRef)
+	{
+		PlayerRef->OnHealthUpdate.Broadcast(Health);
+	}
 	if (Health == 0.0f)
 	{
 		AEnemyAIBase* EnemyRef = Cast<AEnemyAIBase>(DamagedActor);
 		if (EnemyRef)
 		{
+			//UE_LOG(LogTemp, Error, TEXT("DAMAGE INSTIGATOR %s"), *InstigatedBy->GetName());
+			LetPlayerKnowEnemyKill(InstigatedBy);
 			EnemyRef->Die();
 		}
-		else
+
+		if (PlayerRef)
 		{
-			ATurretHead* PlayerRef = Cast<ATurretHead>(DamagedActor);
-			if (PlayerRef)
-			{
-				PlayerRef->Die();
-			}
+			PlayerRef->Die();
 		}
 
 	}
 
-	FString LogMessage = GetOwner()->GetName() + " " + FString::SanitizeFloat(Health);
+	//FString LogMessage = GetOwner()->GetName() + " " + FString::SanitizeFloat(Health);
 	// *FString because we need to convert that into character array
-	UE_LOG(LogTemp, Log, TEXT("Health Changed: %s"), *LogMessage);
+	//UE_LOG(LogTemp, Log, TEXT("Health Changed: %s"), *LogMessage);
+}
+
+void UHealthComponentBase::ResetHealth()
+{
+	Health = DefaultHealth;
+	ATurretHead* PlayerRef = Cast<ATurretHead>(GetOwner());
+	if (PlayerRef)
+	{
+		PlayerRef->OnHealthUpdate.Broadcast(Health);
+	}
+}
+
+void UHealthComponentBase::LetPlayerKnowEnemyKill(AController* InstigatedBy)
+{
+	AWaveGamePlayerController* CurrentPlayerController = Cast<AWaveGamePlayerController>(InstigatedBy);
+	if (CurrentPlayerController)
+	{
+		CurrentPlayerController->OwningPawn->OnPlayerScored.Broadcast(false);
+	}
+
 }

@@ -1,9 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "WaveGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "EnemyAIBase.h"
+#include "BasicProjectile.h"
+#include "TurretHead.h"
+#include "WaveGamePlayerController.h"
 
 AWaveGameMode::AWaveGameMode()
 {
@@ -14,13 +17,33 @@ AWaveGameMode::AWaveGameMode()
 
 	PrimaryActorTick.TickInterval = 1.0f;
 	PrimaryActorTick.bCanEverTick = true;
+
+}
+
+void AWaveGameMode::StartGame()
+{
+	TArray<AActor*> PlayerPawn;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATurretHead::StaticClass(), PlayerPawn);
+	if (PlayerPawn.Num() == 0 && IsValid(SpawnPlayerTurret))
+	{
+		FActorSpawnParameters SpawnParams;
+		ATurretHead* NewTurretHead = GetWorld()->SpawnActor<ATurretHead>(SpawnPlayerTurret, FVector(0.0f, 0.0f, 125.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
+		
+		AWaveGamePlayerController* CurrentPlayerController = Cast<AWaveGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		
+		// it seems I dont have to call posses because this PreInitializeComponents method is being called as soon as I spawn the Pawn.
+		/*CurrentPlayerController->Possess(NewTurretHead);*/
+
+	}
+
+	PrepareForNextWave();
 }
 
 void AWaveGameMode::StartPlay()
 {
 	Super::StartPlay();
 
-	PrepareForNextWave();
+	//PrepareForNextWave();
 }
 
 void AWaveGameMode::Tick(float DeltaSeconds)
@@ -121,4 +144,45 @@ void AWaveGameMode::EndWave()
 	}
 }
 
+
+void AWaveGameMode::DestroyAndStartOver()
+{
+	// this array has to be the type of AActor because GetAllActorsOfClass is not a template function
+	// so cannot pass the exact AEnemyAIBase type. Will have to cast on iteration
+	TArray<AActor*> EnemyAIs;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyAIBase::StaticClass(), EnemyAIs);
+	for (AActor* TActor : EnemyAIs)
+	{
+		AEnemyAIBase* Enemy = Cast<AEnemyAIBase>(TActor);
+
+		if (Enemy != nullptr)
+		{
+			Enemy->Destroy();
+		}
+	}
+	// find and destroy existing projectiles
+	TArray<AActor*> Projectiles;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABasicProjectile::StaticClass(), Projectiles);
+	for (AActor* TActor : Projectiles)
+	{
+		ABasicProjectile* Projectile = Cast<ABasicProjectile>(TActor);
+
+		if (Projectile != nullptr)
+		{
+			Projectile->Destroy();
+		}
+	}
+	// Resetting Values and Timers
+	EnemyWaveCount = 0;
+	GetWorldTimerManager().ClearTimer(TimerHandle_EnemySpawner);
+
+	// Finally start game
+	StartGame();
+}
+
+void AWaveGameMode::RestartPlayer(AController* NewPlayer)
+{
+	// do nothing here for now
+	return;
+}
 

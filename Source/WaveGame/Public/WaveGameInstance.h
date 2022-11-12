@@ -7,20 +7,23 @@
 #include "WaveGameInstance.generated.h"
 
 /**
- * 
+ * https://www.youtube.com/watch?v=XKNIQga3HYk - init UI
  */
 UCLASS()
 class WAVEGAME_API UWaveGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-	
+
 public:
 
-	void InitiateHud();
+	UWaveGameInstance(const FObjectInitializer& ObjectIntializer);
 
-	void StartGame();
+	TSubclassOf<class UMasterView> MasterViewRef;
+	
+	class UMasterView* SpawnedMasterView;
 
-	void ExitGame();
+public:
 
-	void PauseGame();
+	void InitiateUI();
+	
 };

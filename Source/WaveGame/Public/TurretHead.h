@@ -6,6 +6,9 @@
 #include "GameFramework/Character.h"
 #include "TurretHead.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdate, float, HealthNow);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDied);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerScored, bool, Reset);
 
 UENUM(BlueprintType)
 enum class TurretState : uint8
@@ -38,9 +41,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	class UStaticMeshComponent* CylinderMeshComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> HUDWidgetRef;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Detector")
 	class UBoxComponent* EnemyNotifierBox;
 
@@ -50,9 +50,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 	class UHealthComponentBase* HealthComponent;
 
+	UPROPERTY()
+	FOnHealthUpdate OnHealthUpdate;
+
+	UPROPERTY()
+	FOnPlayerDied OnPlayerDied;
+	
+	UPROPERTY()
+	FOnPlayerScored OnPlayerScored;
+
 protected:
 
 	TurretState TurretStatus;
+
+	float Score;
 
 protected:
 	// Called when the game starts or when spawned
@@ -70,6 +81,9 @@ protected:
 
 	void Fire();
 
+	UFUNCTION()
+	void UpdateScore(bool Reset = false);
+
 public:
 	// Sets default values for this character's properties
 	ATurretHead();
@@ -86,4 +100,9 @@ public:
 
 	void SetTurretStatus(TurretState State);
 
+	void Reset();
+
+	float GetScore();
+
+	void ResetPlayerScore();
 };

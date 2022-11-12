@@ -33,6 +33,9 @@ public:
 	TSubclassOf<class AEnemyAIBase> SpawnEnemy;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
+	TSubclassOf<class ATurretHead> SpawnPlayerTurret;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
 	TSubclassOf<class AEnemyAIBase> SpawnEnemyBoss;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
@@ -81,11 +84,14 @@ public:
 
 	AWaveGameMode();
 
-	/*
-		init call
-	*/
 	virtual void StartPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	UFUNCTION()
+	void StartGame();
+
+	void DestroyAndStartOver();
+
+	virtual void RestartPlayer(AController* NewPlayer) override;
 };
