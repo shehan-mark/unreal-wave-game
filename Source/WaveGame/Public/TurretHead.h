@@ -59,6 +59,9 @@ public:
 	UPROPERTY()
 	FOnPlayerScored OnPlayerScored;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class AForcePush> PushActor;
+
 protected:
 
 	TurretState TurretStatus;
@@ -105,4 +108,7 @@ public:
 	float GetScore();
 
 	void ResetPlayerScore();
+
+	UFUNCTION()
+	void SpawnForcePush();
 };

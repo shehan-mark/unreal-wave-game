@@ -15,6 +15,7 @@
 #include "HealthComponentBase.h"
 #include "BasicProjectile.h"
 #include "WaveGameInstance.h"
+#include "ForcePush.h"
 
 // Sets default values
 ATurretHead::ATurretHead()
@@ -183,6 +184,7 @@ void ATurretHead::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("LookUp", this, &ATurretHead::MousePitch);
 
 	PlayerInputComponent->BindAction("LMB", IE_Pressed, this, &ATurretHead::Fire);
+	PlayerInputComponent->BindAction("ForcePush", IE_Pressed, this, &ATurretHead::SpawnForcePush);
 }
 
 void ATurretHead::Die()
@@ -236,4 +238,18 @@ float ATurretHead::GetScore()
 void ATurretHead::ResetPlayerScore()
 {
 	Score = 0.0f;
+}
+
+void ATurretHead::SpawnForcePush()
+{
+	if (IsValid(PushActor))
+	{
+		FActorSpawnParameters SpawnParams;
+		AForcePush* SpawnedPushActor = GetWorld()->SpawnActor<AForcePush>(PushActor, FVector(0.0f, 0.0f, 20.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
+
+		if (SpawnedPushActor != nullptr)
+		{
+			UE_LOG(LogTemp, Log, TEXT("PUSH ACTOR SPAWNED"));
+		}
+	}
 }
