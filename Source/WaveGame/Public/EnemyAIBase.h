@@ -56,6 +56,11 @@ protected:
 
 	EnemyState EnemyStatus;
 
+	UPROPERTY()
+	bool Stunned;
+
+	FTimerHandle TimerHandle_UnStun;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -79,5 +84,11 @@ public:
 	void DoDamage();
 
 	void Die();
+
+	void Stun(float StunDuration);
+
+	void UnStun();
+
+	bool IsStunned();
 
 };

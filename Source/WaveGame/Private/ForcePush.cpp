@@ -23,6 +23,7 @@ AForcePush::AForcePush()
 
 	PushBackUnits = 300.f;
 	SpawnedLifeTime = 1.0f;
+	EnemyStunDuration = 3.0f;
 }
 
 // Called when the game starts or when spawned
@@ -56,6 +57,7 @@ void AForcePush::StartPush(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		Dir *= PushBackUnits;
 		FVector NewPos = EnemyCurentLocation + FVector(Dir.X, Dir.Y, 0.0f);
 		HitEnemy->SetActorLocation(NewPos);
+		HitEnemy->Stun(EnemyStunDuration);
 	}
 }
 

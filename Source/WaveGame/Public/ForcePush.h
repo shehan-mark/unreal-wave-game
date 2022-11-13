@@ -27,6 +27,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Ability")
 	float SpawnedLifeTime;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	float EnemyStunDuration;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
