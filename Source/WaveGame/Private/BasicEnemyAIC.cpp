@@ -49,7 +49,7 @@ void ABasicEnemyAIC::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	UE_LOG(LogTemp, Warning, TEXT("ABasicEnemyAIC::OnPossess called"));
+	//UE_LOG(LogTemp, Warning, TEXT("ABasicEnemyAIC::OnPossess called"));
 	if (InPawn != nullptr)
 	{
 		CurrentPawn = Cast<AEnemyAIBase>(InPawn);

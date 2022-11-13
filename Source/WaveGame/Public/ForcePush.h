@@ -18,6 +18,15 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Custom")
 	class USphereComponent* SphereComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	float PushBackUnits;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	float InitialRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	float SpawnedLifeTime;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -25,5 +34,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+	void StartPush(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 };
