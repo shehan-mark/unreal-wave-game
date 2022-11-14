@@ -16,6 +16,7 @@ void UInGameHUD::NativeConstruct()
 	Super::NativeConstruct();
 	// Initial health status
 	HealthBar_HUD->SetPercent(1);
+	//AbilityBar_HUD->SetPercent(0);
 
 	CurrentPlayerController = Cast<AWaveGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if (CurrentPlayerController)
@@ -45,5 +46,12 @@ void UInGameHUD::BindPlayerEvents()
 	{
 		CurrentPlayerController->OwningPawn->OnHealthUpdate.AddDynamic(this, &UInGameHUD::UpdateHealthBar);
 		UpdateHealthBar(100.f);
+		CurrentPlayerController->OwningPawn->OnAbilityAmountUpdate.AddDynamic(this, &UInGameHUD::UpdateAbilityBar);
 	}
+}
+
+void UInGameHUD::UpdateAbilityBar(float AbilityAmount)
+{
+	float PercentageValue = AbilityAmount / 100.f;
+	AbilityBar_HUD->SetPercent(PercentageValue);
 }

@@ -51,10 +51,10 @@ ATurretHead::ATurretHead()
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponentBase>(TEXT("HealthComponent"));
 	LifeSpanAfterDeath = 3.0f;
+	AbilityPowerLevel = 0.0f;
 
 	// Take control of the default player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
-
 }
 
 // Called when the game starts or when spawned
@@ -62,6 +62,7 @@ void ATurretHead::BeginPlay()
 {
 	Super::BeginPlay();
 	OnPlayerScored.AddDynamic(this, &ATurretHead::UpdateScore);
+	StartAbilityRegen();
 }
 
 void ATurretHead::MouseYaw(float Value)
@@ -242,6 +243,8 @@ void ATurretHead::ResetPlayerScore()
 
 void ATurretHead::SpawnForcePush()
 {
+	if (AbilityPowerLevel != 100.f) return;
+
 	if (IsValid(PushActor))
 	{
 		FActorSpawnParameters SpawnParams;
@@ -252,4 +255,22 @@ void ATurretHead::SpawnForcePush()
 			UE_LOG(LogTemp, Log, TEXT("PUSH ACTOR SPAWNED"));
 		}
 	}
+	AbilityPowerLevel = 0.0f;
+	OnAbilityAmountUpdate.Broadcast(AbilityPowerLevel);
+	StartAbilityRegen();
+}
+
+void ATurretHead::RestoreAbility()
+{
+	AbilityPowerLevel += 10.f;
+	OnAbilityAmountUpdate.Broadcast(AbilityPowerLevel);
+	if (AbilityPowerLevel == 100.f)
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_RestoreAbility);
+	}
+}
+
+void ATurretHead::StartAbilityRegen()
+{
+	GetWorldTimerManager().SetTimer(TimerHandle_RestoreAbility, this, &ATurretHead::RestoreAbility, 1.0f, true, 1.0f);
 }
