@@ -15,6 +15,7 @@
 #include "HealthComponentBase.h"
 #include "BasicProjectile.h"
 #include "WaveGameInstance.h"
+#include "ForcePush.h"
 
 // Sets default values
 ATurretHead::ATurretHead()
@@ -50,10 +51,10 @@ ATurretHead::ATurretHead()
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponentBase>(TEXT("HealthComponent"));
 	LifeSpanAfterDeath = 3.0f;
+	AbilityPowerLevel = 0.0f;
 
 	// Take control of the default player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
-
 }
 
 // Called when the game starts or when spawned
@@ -61,6 +62,7 @@ void ATurretHead::BeginPlay()
 {
 	Super::BeginPlay();
 	OnPlayerScored.AddDynamic(this, &ATurretHead::UpdateScore);
+	StartAbilityRegen();
 }
 
 void ATurretHead::MouseYaw(float Value)
@@ -183,6 +185,7 @@ void ATurretHead::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("LookUp", this, &ATurretHead::MousePitch);
 
 	PlayerInputComponent->BindAction("LMB", IE_Pressed, this, &ATurretHead::Fire);
+	PlayerInputComponent->BindAction("ForcePush", IE_Pressed, this, &ATurretHead::SpawnForcePush);
 }
 
 void ATurretHead::Die()
@@ -236,4 +239,38 @@ float ATurretHead::GetScore()
 void ATurretHead::ResetPlayerScore()
 {
 	Score = 0.0f;
+}
+
+void ATurretHead::SpawnForcePush()
+{
+	if (AbilityPowerLevel != 100.f) return;
+
+	if (IsValid(PushActor))
+	{
+		FActorSpawnParameters SpawnParams;
+		AForcePush* SpawnedPushActor = GetWorld()->SpawnActor<AForcePush>(PushActor, FVector(0.0f, 0.0f, 20.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
+
+		if (SpawnedPushActor != nullptr)
+		{
+			UE_LOG(LogTemp, Log, TEXT("PUSH ACTOR SPAWNED"));
+		}
+	}
+	AbilityPowerLevel = 0.0f;
+	OnAbilityAmountUpdate.Broadcast(AbilityPowerLevel);
+	StartAbilityRegen();
+}
+
+void ATurretHead::RestoreAbility()
+{
+	AbilityPowerLevel += 10.f;
+	OnAbilityAmountUpdate.Broadcast(AbilityPowerLevel);
+	if (AbilityPowerLevel == 100.f)
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_RestoreAbility);
+	}
+}
+
+void ATurretHead::StartAbilityRegen()
+{
+	GetWorldTimerManager().SetTimer(TimerHandle_RestoreAbility, this, &ATurretHead::RestoreAbility, 1.0f, true, 1.0f);
 }

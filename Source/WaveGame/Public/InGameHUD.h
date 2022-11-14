@@ -18,6 +18,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UProgressBar* HealthBar_HUD;
+	
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UProgressBar* AbilityBar_HUD;
 
 	class AWaveGamePlayerController* CurrentPlayerController;
 
@@ -31,6 +34,9 @@ public:
 
 	UFUNCTION()
 	void BindPlayerEvents();
+
+	UFUNCTION()
+	void UpdateAbilityBar(float AbilityAmount);
 
 protected:
 

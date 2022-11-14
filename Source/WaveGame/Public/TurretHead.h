@@ -9,6 +9,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdate, float, HealthNow);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDied);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerScored, bool, Reset);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAbilityAmountUpdate, float, AbilityAmount);
 
 UENUM(BlueprintType)
 enum class TurretState : uint8
@@ -59,6 +60,17 @@ public:
 	UPROPERTY()
 	FOnPlayerScored OnPlayerScored;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class AForcePush> PushActor;
+
+	UPROPERTY()
+	float AbilityPowerLevel;
+
+	UPROPERTY()
+	FOnAbilityAmountUpdate OnAbilityAmountUpdate;
+
+	FTimerHandle TimerHandle_RestoreAbility;
+
 protected:
 
 	TurretState TurretStatus;
@@ -105,4 +117,12 @@ public:
 	float GetScore();
 
 	void ResetPlayerScore();
+
+	UFUNCTION()
+	void SpawnForcePush();
+
+	UFUNCTION()
+	void RestoreAbility();
+
+	void StartAbilityRegen();
 };

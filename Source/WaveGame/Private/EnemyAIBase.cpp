@@ -5,7 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
-
+#include "TimerManager.h"
 #include "NavigationSystem.h" 
 #include "NavigationPath.h"
 #include "Kismet/GameplayStatics.h"
@@ -42,6 +42,8 @@ AEnemyAIBase::AEnemyAIBase()
 	LifeSpanAfterDeath = 3.0f;
 	DamageAmount = 5.0f;
 	AttackRate = 2.0f;
+
+	Stunned = false;
 }
 
 // Called when the game starts or when spawned
@@ -101,4 +103,22 @@ void AEnemyAIBase::Die()
 		APC->SetLifeSpan(LifeSpanAfterDeath);
 		SetLifeSpan(LifeSpanAfterDeath);
 	}
+}
+
+void AEnemyAIBase::Stun(float StunDuration)
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_UnStun);
+	Stunned = true;
+	// start timer to unstun enemy
+	GetWorldTimerManager().SetTimer(TimerHandle_UnStun, this, &AEnemyAIBase::UnStun, 1.0f, false, StunDuration);
+}
+
+void AEnemyAIBase::UnStun()
+{
+	Stunned = false;
+}
+
+bool AEnemyAIBase::IsStunned()
+{
+	return Stunned;
 }

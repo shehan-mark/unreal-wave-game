@@ -15,7 +15,6 @@
 #include "Components/SphereComponent.h"
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
-#include "TimerManager.h"
 
 #include "EnemyAIBase.h"
 #include "TurretHead.h"
@@ -49,7 +48,7 @@ void ABasicEnemyAIC::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	UE_LOG(LogTemp, Warning, TEXT("ABasicEnemyAIC::OnPossess called"));
+	//UE_LOG(LogTemp, Warning, TEXT("ABasicEnemyAIC::OnPossess called"));
 	if (InPawn != nullptr)
 	{
 		CurrentPawn = Cast<AEnemyAIBase>(InPawn);
@@ -180,6 +179,9 @@ void ABasicEnemyAIC::MovePawnToLocation(float DeltaSeconds)
 		/*if (CurrentPawn->GetEnemyStatus() != EnemyState::MOVING)
 			CurrentPawn->SetEnemyStatus(EnemyState::MOVING);*/
 		
+		// dont move the enemy if stunned
+		if (CurrentPawn->IsStunned()) return;
+
 		FVector MovementDirection = (NextPathPoint - CurrentLocation);
 
 		FVector Dir = MovementDirection;
