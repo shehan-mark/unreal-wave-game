@@ -8,9 +8,22 @@
 #include "MasterView.h"
 #include "TurretHead.h"
 
+void AWaveGamePlayerController::AddPitchInput(float Val)
+{
+	RotationInput.Pitch += !IsLookInputIgnored() ? Val * InputPitchScale : 0.f;
+	
+	/*const float ScaledInput = Value * OwnPlayerController->InputYawScale;
+	const float YawSum = LocalControlRotation.Yaw + ScaledInput * -1.f;
+	if (YawSum > -90.f && YawSum < 90.f) OwnPlayerController->AddYawInput(Value);
+	else if (LocalControlRotation.Yaw > -90.f && LocalControlRotation.Yaw < 90.f) {
+		const float InputRemainder = FMath::Sign(Value) * FMath::Abs((90.f - FMath::Abs(LocalControlRotation.Yaw)) / OwnPlayerController->InputYawScale);
+		OwnPlayerController->AddYawInput(InputRemainder);
+	}*/
+
+}
+
 AWaveGamePlayerController::AWaveGamePlayerController()
 {
-
 }
 
 void AWaveGamePlayerController::BeginPlay()
@@ -28,6 +41,7 @@ void AWaveGamePlayerController::BeginPlay()
 	
 	/*EnableInput(this);
 	SetTickableWhenPaused(true);*/
+
 }
 
 void AWaveGamePlayerController::Tick(float DeltaTime)

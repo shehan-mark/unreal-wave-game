@@ -11,11 +11,13 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 #include "HealthComponentBase.h"
 #include "BasicProjectile.h"
 #include "WaveGameInstance.h"
 #include "ForcePush.h"
+#include "WaveGamePlayerController.h"
 
 // Sets default values
 ATurretHead::ATurretHead()
@@ -73,11 +75,14 @@ void ATurretHead::MouseYaw(float Value)
 
 void ATurretHead::MousePitch(float Value)
 {
-
 	if (Value != 0.f && Controller && Controller->IsLocalPlayerController())
 	{
-		APlayerController* const PC = Cast<APlayerController>(Controller);
-		PC->AddPitchInput(Value);
+		AWaveGamePlayerController* const APC = Cast<AWaveGamePlayerController>(Controller);
+		APC->AddPitchInput(Value);
+
+		// make controller rotation and character rotation similar in order to aim properly
+		FRotator ControllerRotation = APC->GetControlRotation();
+		RootComponent->SetWorldRotation(FRotator(ControllerRotation.Pitch, ControllerRotation.Yaw, 0.0f));
 	}
 }
 
@@ -146,7 +151,6 @@ void ATurretHead::Fire()
 		//FRotator SpawnRotation = CylinderMeshComponent->GetSocketRotation("ShootingPoint");
 		DrawDebugSphere(GetWorld(), SpawnLocation, 5, 10, FColor(181, 0, 0), true, -1, 0, 2);
 
-		const FRotator SpawnRotationOne = GetControlRotation();
 		const FRotator SpawnRotationTwo = GetVectorForTurretDirection();
 
 		/*UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire - SpawnRotationOne %f, %f, %f"), SpawnRotationOne.Pitch, SpawnRotationOne.Yaw, SpawnRotationOne.Roll);

@@ -24,7 +24,7 @@ AEnemyAIBase::AEnemyAIBase()
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 
-	SphereComponent->InitSphereRadius(20.f);
+	SphereComponent->InitSphereRadius(50.f);
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	SphereComponent->SetSimulatePhysics(true);

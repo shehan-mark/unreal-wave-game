@@ -51,6 +51,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void AddPitchInput(float Val) override;
+
 protected:
 
 	virtual void BeginPlay() override;

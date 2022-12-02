@@ -16,7 +16,7 @@ void UInGameHUD::NativeConstruct()
 	Super::NativeConstruct();
 	// Initial health status
 	HealthBar_HUD->SetPercent(1);
-	//AbilityBar_HUD->SetPercent(0);
+	AbilityBar_HUD->SetPercent(0);
 
 	CurrentPlayerController = Cast<AWaveGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if (CurrentPlayerController)

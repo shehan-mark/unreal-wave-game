@@ -27,13 +27,13 @@ ABasicProjectile::ABasicProjectile()
 	RootComponent = SphereComponent;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	MeshComponent->SetWorldScale3D(FVector(0.4f, 0.4f, 0.4f));
+	MeshComponent->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
 	MeshComponent->SetupAttachment(SphereComponent);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = SphereComponent;
-	ProjectileMovement->InitialSpeed = 2000.f;
-	ProjectileMovement->MaxSpeed = 2000.f;
+	ProjectileMovement->InitialSpeed = 3000.f;
+	ProjectileMovement->MaxSpeed = 5000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
 
@@ -66,6 +66,8 @@ void ABasicProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 	AEnemyAIBase* HitEnemy = Cast<AEnemyAIBase>(OtherActor);
 	if (HitEnemy)
 	{
+		ProjectileMovement->Velocity = FVector(500.0f, 0.0f, 0.0f);
+		ProjectileMovement->UpdateComponentVelocity();
 		APlayerController* Ctrl = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 		if (Ctrl)
 		{
