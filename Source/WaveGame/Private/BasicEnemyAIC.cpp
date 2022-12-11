@@ -78,11 +78,12 @@ void ABasicEnemyAIC::BeginPlay()
 */
 void ABasicEnemyAIC::FindAndMakeTarget(float DeltaTime)
 {
+	if (bPushingBack) return;
+
 	if (CurrentPawn->GetEnemyStatus() == EnemyState::DEAD) return;
 	
 	if (CurrentPawn->IsStunned()) return;
 
-	if (bPushingBack) return;
 
 	TArray<AActor*> Turrets;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATurretHead::StaticClass(), Turrets);
@@ -189,7 +190,7 @@ void ABasicEnemyAIC::AttackTarget()
 {
 	float DistanceToAttack = GetEnemyToTargetPointLength(FVector(CurrentTargetActorLKP.X, CurrentTargetActorLKP.Y, CurrentPawn->GetActorLocation().Z));
 	bool bCloseEnoughToDoDamage = DistanceToAttack <= 150.f;
-	if (bCloseEnoughToDoDamage && CurrentPawn->CurrentDamageTarget->GetTurretStatus() != TurretState::DEAD)
+	if (bCloseEnoughToDoDamage && CurrentPawn->CurrentDamageTarget && CurrentPawn->CurrentDamageTarget->GetTurretStatus() != TurretState::DEAD)
 	{
 		CurrentPawn->DoDamage();
 	}

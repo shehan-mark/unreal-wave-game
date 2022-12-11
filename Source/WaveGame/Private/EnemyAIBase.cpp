@@ -60,9 +60,10 @@ void AEnemyAIBase::OnCollisionOverlap(UPrimitiveComponent* OverlappedComponent, 
 {
 	UE_LOG(LogTemp, Warning, TEXT("OTHER ACTOR %s"), *OtherActor->GetName());
 	ABasicEnemyAIC* AIC = Cast<ABasicEnemyAIC>(GetController());
-	CurrentDamageTarget = Cast<ATurretHead>(OtherActor);
-	if (CurrentDamageTarget)
+	ATurretHead* CurrentTurret = Cast<ATurretHead>(OtherActor);
+	if (CurrentTurret)
 	{
+		CurrentDamageTarget = CurrentTurret;
 		/*EnemyStatus = EnemyState::ATTACK;*/
 		if (AIC)
 		{
@@ -128,7 +129,7 @@ void AEnemyAIBase::Die()
 	if (APC)
 	{
 		SetEnemyStatus(EnemyState::DEAD);
-		APC->UnPossess();
+		//APC->UnPossess();
 		APC->SetLifeSpan(LifeSpanAfterDeath);
 		SetLifeSpan(LifeSpanAfterDeath);
 	}
