@@ -3,6 +3,7 @@
 
 #include "ForcePush.h"
 #include "EnemyAIBase.h"
+#include "BasicEnemyAIC.h"
 
 #include "Components/SphereComponent.h"
 
@@ -56,7 +57,12 @@ void AForcePush::StartPush(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 		Dir *= PushBackUnits;
 		FVector NewPos = EnemyCurentLocation + FVector(Dir.X, Dir.Y, 0.0f);
-		HitEnemy->SetActorLocation(NewPos);
+
+		ABasicEnemyAIC* EnemyAIC = Cast<ABasicEnemyAIC>(HitEnemy->GetController());
+		if (EnemyAIC)
+		{
+			EnemyAIC->PushBack(NewPos);
+		}
 		HitEnemy->Stun(EnemyStunDuration);
 	}
 }

@@ -15,6 +15,7 @@
 #include "DrawDebugHelpers.h"
 #include "BasicEnemyAIC.h"
 #include "TurretHead.h"
+#include "ForcePush.h"
 
 // Sets default values
 AEnemyAIBase::AEnemyAIBase()
@@ -24,10 +25,10 @@ AEnemyAIBase::AEnemyAIBase()
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 
-	SphereComponent->InitSphereRadius(50.f);
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	SphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-	SphereComponent->SetSimulatePhysics(true);
+	SphereComponent->InitSphereRadius(30.f);
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//SphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	SphereComponent->SetSimulatePhysics(false);
 	RootComponent = SphereComponent;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
@@ -57,12 +58,40 @@ void AEnemyAIBase::BeginPlay()
 
 void AEnemyAIBase::OnCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("AEnemyAIBase::OnCollisionOverlap - Overlapped Actor %s"), *OtherActor->GetName());
-
+	UE_LOG(LogTemp, Warning, TEXT("OTHER ACTOR %s"), *OtherActor->GetName());
+	ABasicEnemyAIC* AIC = Cast<ABasicEnemyAIC>(GetController());
 	CurrentDamageTarget = Cast<ATurretHead>(OtherActor);
 	if (CurrentDamageTarget)
 	{
-		EnemyStatus = EnemyState::ATTACK;
+		/*EnemyStatus = EnemyState::ATTACK;*/
+		if (AIC)
+		{
+			AIC->StartAttack();
+		}
+	}
+	else
+	{
+		if (OtherActor == this) return;
+		AForcePush* ForcePushActor = Cast<AForcePush>(OtherActor);
+		if (ForcePushActor) return;
+
+		FVector CurrLocation = GetActorLocation();
+		FVector OtherActorLocation = OtherActor->GetActorLocation();
+
+		FVector V1 = FVector(CurrLocation.X, CurrLocation.Y, 50.0f);
+		FVector V2 = FVector(OtherActorLocation.X, OtherActorLocation.Y, 50.0f);
+
+		FVector Dir = V1 - V2;
+		Dir.Normalize();
+		Dir *= 250.f;
+		FVector NewPos = FVector(V1.X, V1.Y, CurrLocation.Z) + FVector(Dir.X, Dir.Y, 0.0);
+
+		DrawDebugDirectionalArrow(GetWorld(), CurrLocation, NewPos, 5.0f, FColor::Red, true, 3.0f);
+
+		if (AIC)
+		{
+			AIC->OnDirectionUpdate.Broadcast(CurrLocation, NewPos);
+		}
 	}
 }
 

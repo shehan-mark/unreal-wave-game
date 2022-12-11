@@ -24,192 +24,111 @@ ABasicEnemyAIC::ABasicEnemyAIC()
 {
 	bLoggsEnabled = false;
 
-	BlackBoardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackBoardComponent"));
+	//BlackBoardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackBoardComponent"));
 
 	// this is what tells our behavior tree what to do
-	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
+	//BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
 
-	MovementStoppingRadius = 200.0f;
-	TargetPointReachThreshold = 1.0f;
-	EnemyMovementSpeed = 100.0f;
-
-	bShouldStopMovement = false;
-	bEnemyReachedCurrentTarget = false;
+	TargetPointReachThreshold = 50.0f;
+	MovementSpeed = 150.f;
+	
+	bPushingBack = false;
+	// bShouldStopMovement = false;
+	// bEnemyReachedCurrentTarget = false;
 }
 
 void ABasicEnemyAIC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	BlackBoardComponent->SetValueAsEnum(FName("EnemyState"), (uint8)CurrentPawn->GetEnemyStatus());
+	//BlackBoardComponent->SetValueAsEnum(FName("EnemyState"), (uint8)CurrentPawn->GetEnemyStatus());
+
+	FindAndMakeTarget(DeltaTime);
+
+	if (bPushingBack)
+	{
+		CurrentPawn->SetActorLocation(FMath::Lerp(CurrentPawn->GetActorLocation(), PushedBackToPoint, 0.02f));
+	}
+	
 }
 
 void ABasicEnemyAIC::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	//UE_LOG(LogTemp, Warning, TEXT("ABasicEnemyAIC::OnPossess called"));
 	if (InPawn != nullptr)
 	{
 		CurrentPawn = Cast<AEnemyAIBase>(InPawn);
 		
-		CurrentGoalLocation = FVector(0.0f, 0.0f, CurrentPawn->GetActorLocation().Z);
-		
-		/*
-		*	initial next path point is the current location
-		*	therefore in the first move check AIC think it already reached the NextPathPoint
-		*	and start calculating the new pathpoint
-		*/
-		NextPathPoint = CurrentPawn->GetActorLocation();
-
-		if (CurrentPawn && CurrentPawn->BehaviorTreeRef != nullptr)
-		{
-			BlackBoardComponent->InitializeBlackboard(*CurrentPawn->BehaviorTreeRef->BlackboardAsset);
-			
-			BlackBoardComponent->SetValueAsObject(FName("SelfActor"), InPawn);
-			BlackBoardComponent->SetValueAsVector(FName("NextPathPoint"), NextPathPoint);
-			BlackBoardComponent->SetValueAsBool(FName("ShouldStopMovement"), bShouldStopMovement);
-			
-			BehaviorTreeComponent->StartTree(*CurrentPawn->BehaviorTreeRef);
-		}
-
 	}
 }
 
-void ABasicEnemyAIC::UpdateCurrentGoalLocation()
+void ABasicEnemyAIC::BeginPlay()
 {
-	// for now this will be a zero vector. But if are going to have more turrets. This will be helpful
-	CurrentGoalLocation = FVector::ZeroVector;
-}
+	Super::BeginPlay();
 
-void ABasicEnemyAIC::FindAndMakeTarget()
-{
-	/*
-	* what happens after wait in BT 
-	* need find next/ closest target logic here
-	* 
-	*/
-	if (!CurrentGoalLocation.IsZero() && CurrentGoalLocation != CurrentPawn->GetActorLocation() && !bShouldStopMovement)
-	{
-		NextPathPoint = GetNextPathPoint();
-		BlackBoardComponent->SetValueAsVector(FName("NextPathPoint"), NextPathPoint);
-
-		UpdateEnemyLookRotation();
-		bEnemyReachedCurrentTarget = false;
-		CurrentPawn->SetEnemyStatus(EnemyState::MOVING);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("ABasicEnemyAIC::FindAndMakeTarget ELSE Part"));
-
-		// otherwise just wonder since we cant even find a target
-	}
+	OnDirectionUpdate.AddDynamic(this, &ABasicEnemyAIC::UpdateNextPath);
 }
 
 /*
-*  Turn enemy's forward to target location
+* First find a target/ player
+* Find the next path point towards target
+* Look at the target/ player
+* Start moving
+*/
+void ABasicEnemyAIC::FindAndMakeTarget(float DeltaTime)
+{
+	if (CurrentPawn->GetEnemyStatus() == EnemyState::DEAD) return;
+	
+	if (CurrentPawn->IsStunned()) return;
+
+	if (bPushingBack) return;
+
+	TArray<AActor*> Turrets;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATurretHead::StaticClass(), Turrets);
+	if (Turrets.Num() < 1) return; // no turrets exist
+
+	CurrentTargetActor = Turrets[0];
+	CurrentTargetActorLKP = CurrentTargetActor->GetActorLocation();
+	// check if current target is reached
+	if (NextTargetPoint.IsZero() || CheckIfCurrentTargetPointReached())
+	{
+		LastStartingLocation = CurrentPawn->GetActorLocation();
+		NextTargetPoint = CalculateNextPathPoint();
+	}
+	
+	UpdateEnemyLookRotation(DeltaTime);
+	MovePawnManually(DeltaTime);
+}
+
+/*
+*  Turn pawn's forward direction towards the NextTargetPoint
 *  https://forums.unrealengine.com/t/how-to-make-an-actor-rotate-to-look-in-a-certain-direction-in-c/144636/3
+*  https://unrealcpp.com/open-door-with-lerp/
 */
-void ABasicEnemyAIC::UpdateEnemyLookRotation()
+void ABasicEnemyAIC::UpdateEnemyLookRotation(float DeltaTime)
 {
 	FVector CurrentEnemyLocation = CurrentPawn->GetActorLocation();
-	
-	/*
-	*  this FindLookAtRotation function gets the job done. But I want to know how to do it manually which we will do later
-	*/
-	FVector NextLocation = NextPathPoint;
-	if (CurrentPawn->GetEnemyStatus() == EnemyState::ATTACK)
-	{
-		FVector _CurrentDamageTargetLocation = CurrentPawn->CurrentDamageTarget->GetActorLocation();
-		NextLocation = FVector(_CurrentDamageTargetLocation.X, _CurrentDamageTargetLocation.Y, CurrentEnemyLocation.Z);
-	}
-	FRotator FinalRotation = UKismetMathLibrary::FindLookAtRotation(CurrentEnemyLocation, NextLocation);
-	CurrentPawn->SetActorRotation(FinalRotation);
+	FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(CurrentEnemyLocation, NextTargetPoint);
+	CurrentPawn->SetActorRotation(FMath::Lerp(CurrentPawn->GetViewRotation(), LookRotation, 0.02f));
 }
 
-void ABasicEnemyAIC::StartAttack()
+FVector ABasicEnemyAIC::CalculateNextPathPoint()
 {
-	GetWorldTimerManager().SetTimer(TimerHandle_EnemyAttack, this, &ABasicEnemyAIC::AttackTarget, CurrentPawn->AttackRate, true, 0.0f);
-}
-
-void ABasicEnemyAIC::AttackTarget()
-{
-	bool bCloseEnoughToDoDamage = GetEnemyToTargetPointLength(CurrentGoalLocation) <= MovementStoppingRadius;
-	/*TurretState NowState = CurrentPawn->CurrentDamageTarget->GetTurretStatus();
-	FString Str = UEnum::GetValueAsString(NowState);
-	UE_LOG(LogTemp, Error, TEXT("ATTACKING TARGET %s"), *Str);*/
-	if (bCloseEnoughToDoDamage && CurrentPawn->CurrentDamageTarget->GetTurretStatus() != TurretState::DEAD)
-	{
-		CurrentPawn->DoDamage();
-	}
-	else
-	{
-		GetWorldTimerManager().ClearTimer(TimerHandle_EnemyAttack);
-		CurrentPawn->SetEnemyStatus(EnemyState::IDLE);
-		bEnemyReachedCurrentTarget = false;
-		bShouldStopMovement = false;
-	}
-}
-
-/*
-	
-*/
-void ABasicEnemyAIC::MovePawnToLocation(float DeltaSeconds)
-{
-	FVector CurrentLocation = CurrentPawn->GetActorLocation();
-
-	float MovementMag = GetEnemyToTargetPointLength(NextPathPoint);
-	if (MovementMag <= TargetPointReachThreshold)
-	{
-		if (CurrentPawn->GetEnemyStatus() == EnemyState::ATTACK)
-		{
-			bEnemyReachedCurrentTarget = true;
-			bShouldStopMovement = true;
-			BlackBoardComponent->SetValueAsBool(FName("ShouldStopMovement"), bShouldStopMovement);
-			UpdateEnemyLookRotation();	
-		}
-		else
-		{
-			bEnemyReachedCurrentTarget = true;
-			CurrentPawn->SetEnemyStatus(EnemyState::IDLE);
-		}
-	}
-	else
-	{
-		/*if (CurrentPawn->GetEnemyStatus() != EnemyState::MOVING)
-			CurrentPawn->SetEnemyStatus(EnemyState::MOVING);*/
-		
-		// dont move the enemy if stunned
-		if (CurrentPawn->IsStunned()) return;
-
-		FVector MovementDirection = (NextPathPoint - CurrentLocation);
-
-		FVector Dir = MovementDirection;
-		Dir.Normalize();
-
-		FVector DeltaMovement = Dir * DeltaSeconds;
-		FVector AddedSpeedLocaiton = DeltaMovement * EnemyMovementSpeed;
-
-		CurrentPawn->SetActorLocation(CurrentLocation + FVector(AddedSpeedLocaiton.X, AddedSpeedLocaiton.Y, 0.0f));
-	}
-}
-
-FVector ABasicEnemyAIC::GetNextPathPoint()
-{
-	FVector CurrentEnemyLocation = CurrentPawn->GetActorLocation();
 	/*
 	*	I had to add Character.h header file in order for below function to understand that ACharacter is a type of Pawn.
 	*	UNavigationPath*  NavigationPath = UNavigationSystemV1::FindPathToActorSynchronously(this, CurrentPawn->GetActorLocation(), PlayerPawn);
 	*
 	*/
-	UNavigationPath* NavigationPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, CurrentEnemyLocation, CurrentGoalLocation);
+	UNavigationPath* NavigationPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, LastStartingLocation, CurrentTargetActorLKP);
 
 	if (NavigationPath->PathPoints.Num() > 1)
 	{
-		FVector PathPoint = CurrentEnemyLocation;
+		FVector PathPoint = LastStartingLocation;
 		for (int i = 1; i < NavigationPath->PathPoints.Num(); i++)
 		{
-			PathPoint = FVector(NavigationPath->PathPoints[i].X, NavigationPath->PathPoints[i].Y, CurrentEnemyLocation.Z);
+			//DrawDebugSphere(GetWorld(), NavigationPath->PathPoints[i], 20, 5, FColor(181, 0, 0), true, -1, 0, 2);
+			PathPoint = FVector(NavigationPath->PathPoints[i].X, NavigationPath->PathPoints[i].Y, LastStartingLocation.Z);
 			if (GetEnemyToTargetPointLength(PathPoint) > TargetPointReachThreshold)
 			{
 				break;
@@ -220,6 +139,67 @@ FVector ABasicEnemyAIC::GetNextPathPoint()
 	}
 
 	return CurrentPawn->GetActorLocation();
+}
+
+void ABasicEnemyAIC::MovePawnManually(float DeltaTime)
+{
+	if (!CheckIfCurrentTargetPointReached())
+	{
+		FVector DiffVector = NextTargetPoint - CurrentPawn->GetActorLocation();
+		float Magnitude = FMath::Sqrt(FMath::Pow(DiffVector.X, 2) + FMath::Pow(DiffVector.Y, 2) + FMath::Pow(DiffVector.Y, 2));
+		FVector NormalizedVector = FVector(DiffVector.X / Magnitude, DiffVector.Y / Magnitude, DiffVector.Z / Magnitude);
+
+		FVector NewLcoation = NormalizedVector * FVector(1, 1, 0) * MovementSpeed * DeltaTime;
+		CurrentPawn->AddActorWorldOffset(NewLcoation);
+	}
+}
+
+void ABasicEnemyAIC::UpdateNextPath(FVector StartLocation, FVector EndLocation)
+{
+	LastStartingLocation = StartLocation;
+	NextTargetPoint = EndLocation;
+
+}
+
+bool ABasicEnemyAIC::CheckIfCurrentTargetPointReached()
+{
+	float TP = GetEnemyToTargetPointLength(NextTargetPoint);
+	if (TP < TargetPointReachThreshold) return true;
+	return false;
+}
+
+void ABasicEnemyAIC::PushBack(FVector NewPosition)
+{
+	bPushingBack = true;
+	PushedBackToPoint = NewPosition;
+	GetWorldTimerManager().SetTimer(TimerHandle_PushBackRestTimer, this, &ABasicEnemyAIC::ResetPushBack, 1.f, false, 2.0f);
+}
+
+void ABasicEnemyAIC::ResetPushBack()
+{
+	bPushingBack = false;
+}
+
+void ABasicEnemyAIC::StartAttack()
+{
+	GetWorldTimerManager().SetTimer(TimerHandle_EnemyAttack, this, &ABasicEnemyAIC::AttackTarget, CurrentPawn->AttackRate, true, 0.0f);
+}
+
+void ABasicEnemyAIC::AttackTarget()
+{
+	float DistanceToAttack = GetEnemyToTargetPointLength(FVector(CurrentTargetActorLKP.X, CurrentTargetActorLKP.Y, CurrentPawn->GetActorLocation().Z));
+	bool bCloseEnoughToDoDamage = DistanceToAttack <= 150.f;
+	if (bCloseEnoughToDoDamage && CurrentPawn->CurrentDamageTarget->GetTurretStatus() != TurretState::DEAD)
+	{
+		CurrentPawn->DoDamage();
+	}
+	else
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_EnemyAttack);
+		//CurrentPawn->SetEnemyStatus(EnemyState::IDLE);
+		bEnemyReachedCurrentTarget = false;
+		bShouldStopMovement = false;
+	}
 }
 
 float ABasicEnemyAIC::GetEnemyToTargetPointLength(FVector TargetPoint)

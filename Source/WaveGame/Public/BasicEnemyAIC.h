@@ -6,6 +6,8 @@
 #include "AIController.h"
 #include "BasicEnemyAIC.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDirectionUpdate, FVector, StartLocation, FVector, EndLocation);
+
 /**
  * 
  */
@@ -28,9 +30,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float MovementStoppingRadius;
 
-	UPROPERTY()
-	FVector NextPathPoint;
-
 	UPROPERTY(BlueprintReadOnly)
 	bool bShouldStopMovement;
 
@@ -46,34 +45,40 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Behavior")
 	float TargetPointReachThreshold;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Behavior")
-	float EnemyMovementSpeed;
-
 	UPROPERTY(BlueprintReadOnly)
 	class AEnemyAIBase* CurrentPawn;
 
+
+	UPROPERTY()
+	FOnDirectionUpdate OnDirectionUpdate;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Behavior")
+	float MovementSpeed;
+
+	AActor* CurrentTargetActor;
+
+	FVector CurrentTargetActorLKP;
+
+	FVector LastStartingLocation;
+
+	FVector NextTargetPoint;
+
+	bool bPushingBack;
+
+	FVector PushedBackToPoint;
+
 protected:
 
-
-	/*
-		enemy current objective
-	*/
-	FVector CurrentGoalLocation;
-
 	FTimerHandle TimerHandle_EnemyAttack;
+
+	FTimerHandle TimerHandle_PushBackRestTimer;
+
 
 protected:
 
 	float GetEnemyToTargetPointLength(FVector TargetPoint);
 
-	void UpdateEnemyLookRotation();
-
-	FVector GetNextPathPoint();
-
-	/*
-	* Find new target as new next goal
-	*/
-	void UpdateCurrentGoalLocation();
+	virtual void BeginPlay() override;
 
 public:
 
@@ -81,17 +86,32 @@ public:
 
 	virtual void OnPossess(APawn* InPawn) override;
 
+	virtual void Tick(float DeltaTime) override;
+
 	UFUNCTION(BlueprintCallable)
-	void MovePawnToLocation(float DeltaSeconds);
+	void FindAndMakeTarget(float DeltaTime);
+
+	void UpdateEnemyLookRotation(float DeltaTime);
+
+	FVector CalculateNextPathPoint();
+
+	UFUNCTION(BlueprintCallable)
+	void MovePawnManually(float DeltaTime);
+
+	UFUNCTION()
+	void UpdateNextPath(FVector StartLocation, FVector EndLocation);
 
 	UFUNCTION(BlueprintCallable)
 	void AttackTarget();
 
 	UFUNCTION(BlueprintCallable)
-	void FindAndMakeTarget();
-	
-	UFUNCTION(BlueprintCallable)
 	void StartAttack();
 
-	virtual void Tick(float DeltaTime) override;
+	bool CheckIfCurrentTargetPointReached();
+
+	void PushBack(FVector NewPosition);
+
+	UFUNCTION()
+	void ResetPushBack();
+
 };

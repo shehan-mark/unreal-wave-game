@@ -165,7 +165,7 @@ void ATurretHead::Fire()
 		
 		if (FireSound != nullptr)
 		{
-			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+			//UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 		}
 	}
 }

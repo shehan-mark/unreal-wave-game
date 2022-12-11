@@ -10,6 +10,7 @@
 #include "BasicProjectileDamage.h"
 #include "DrawDebugHelpers.h"
 #include "TurretHead.h"
+#include "BasicEnemyAIC.h"
 
 // Sets default values
 ABasicProjectile::ABasicProjectile()
@@ -84,12 +85,13 @@ void ABasicProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 		Dir *= EnemyKnockbackAmount;
 		FVector NewPos = EnemyCurentLocation + FVector(Dir.X, Dir.Y, 0.0f);
 
-		//UE_LOG(LogTemp, Error, TEXT("ABasicProjectile::OnHit New Position %f, %f, %f"), NewPos.X, NewPos.Y, NewPos.Z);
-
-		//FVector EndPosition = FVector(0.0f, 0.0f, 0.0f) * 20;
-		//DrawDebugDirectionalArrow(GetWorld(), FVector(0.0f, 0.0f, EnemyCurentLocation.Z), FVector(Dir.X, Dir.Y, EnemyCurentLocation.Z), 5.0f, FColor::Red, true, 3.0f);
 		DrawDebugDirectionalArrow(GetWorld(), FVector(0.0f, 0.0f, EnemyCurentLocation.Z), NewPos, 5.0f, FColor::Red, true, 3.0f);
-		OtherActor->SetActorLocation(NewPos);
+
+		ABasicEnemyAIC* EnemyAIC = Cast<ABasicEnemyAIC>(HitEnemy->GetController());
+		if (EnemyAIC)
+		{
+			EnemyAIC->PushBack(NewPos);
+		}
 	}
 
 }
