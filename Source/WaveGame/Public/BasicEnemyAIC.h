@@ -18,36 +18,20 @@ class WAVEGAME_API ABasicEnemyAIC : public AAIController
 	
 public:
 
-	UPROPERTY(EditDefaultsOnly, Category = "Miscellaneous")
-	bool bLoggsEnabled;
+	//UPROPERTY(EditDefaultsOnly, Category = "AI")
+	//class UBlackboardComponent* BlackBoardComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	class UBlackboardComponent* BlackBoardComponent;
+	//UPROPERTY(EditDefaultsOnly, Category = "AI")
+	//class UBehaviorTreeComponent* BehaviorTreeComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	class UBehaviorTreeComponent* BehaviorTreeComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	float MovementStoppingRadius;
-
-	UPROPERTY(BlueprintReadOnly)
-	bool bShouldStopMovement;
-
-	UPROPERTY()
-	APawn* Target;
-
-	/*
-		we use this value in BTT stop or exit from Enemy Move 
-	*/
-	UPROPERTY(BlueprintReadOnly)
-	bool bEnemyReachedCurrentTarget;
+	UPROPERTY(EditDefaultsOnly, Category = "Behavior")
+	float AttackRadius;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Behavior")
 	float TargetPointReachThreshold;
 
 	UPROPERTY(BlueprintReadOnly)
 	class AEnemyAIBase* CurrentPawn;
-
 
 	UPROPERTY()
 	FOnDirectionUpdate OnDirectionUpdate;
