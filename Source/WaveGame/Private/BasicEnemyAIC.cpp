@@ -26,6 +26,7 @@ ABasicEnemyAIC::ABasicEnemyAIC()
 
 	// this is what tells our behavior tree what to do
 	//BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
+
 	TargetPointReachThreshold = 100.f;
 	AttackRadius = 150.0f;
 	MovementSpeed = 150.f;
@@ -153,6 +154,7 @@ void ABasicEnemyAIC::MovePawnManually(float DeltaTime)
 {
 	if (!CheckIfCurrentTargetPointReached())
 	{
+		CurrentPawn->SetEnemyStatus(EnemyState::MOVING);
 		FVector DiffVector = NextTargetPoint - CurrentPawn->GetActorLocation();
 		float Magnitude = FMath::Sqrt(FMath::Pow(DiffVector.X, 2) + FMath::Pow(DiffVector.Y, 2) + FMath::Pow(DiffVector.Y, 2));
 		FVector NormalizedVector = FVector(DiffVector.X / Magnitude, DiffVector.Y / Magnitude, DiffVector.Z / Magnitude);
@@ -166,7 +168,6 @@ void ABasicEnemyAIC::UpdateNextPath(FVector StartLocation, FVector EndLocation)
 {
 	LastStartingLocation = StartLocation;
 	NextTargetPoint = EndLocation;
-
 }
 
 bool ABasicEnemyAIC::CheckIfCurrentTargetPointReached()
@@ -191,6 +192,7 @@ void ABasicEnemyAIC::ResetPushBack()
 
 void ABasicEnemyAIC::StartAttack()
 {
+	CurrentPawn->SetEnemyStatus(EnemyState::ATTACK);
 	GetWorldTimerManager().SetTimer(TimerHandle_EnemyAttack, this, &ABasicEnemyAIC::AttackTarget, CurrentPawn->AttackRate, true, 0.0f);
 }
 
@@ -205,7 +207,6 @@ void ABasicEnemyAIC::AttackTarget()
 	else
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandle_EnemyAttack);
-		//CurrentPawn->SetEnemyStatus(EnemyState::IDLE);
 	}
 }
 

@@ -27,25 +27,25 @@ class WAVEGAME_API AWaveGameMode : public AGameModeBase
 public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
-	float TimeBetweenWaves;
-
-	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
 	TSubclassOf<class AEnemyAIBase> SpawnEnemy;
 
-	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
-	TSubclassOf<class ATurretHead> SpawnPlayerTurret;
+	/*UPROPERTY(EditDefaultsOnly, Category = "GameMode");
+	TSubclassOf<class AEnemyAIBase> SpawnEnemyBoss;*/
 
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
-	TSubclassOf<class AEnemyAIBase> SpawnEnemyBoss;
-
-	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
-	float SpawnCircleRadius;
+	TSubclassOf<class ATurretHead> PlayerTurretToSpawn;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
 	int32 MaxWaveCount;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
 	int32 EnemyWaveMultiplier;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
+	float TimeBetweenWaves;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
+	float SpawnCircleRadius;
 
 protected:
 
@@ -84,12 +84,12 @@ public:
 
 	AWaveGameMode();
 
+	UFUNCTION()
+	void StartGame();
+
 	virtual void StartPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
-
-	UFUNCTION()
-	void StartGame();
 
 	void DestroyAndStartOver();
 

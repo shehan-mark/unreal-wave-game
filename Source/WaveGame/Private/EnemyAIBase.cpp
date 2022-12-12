@@ -27,7 +27,6 @@ AEnemyAIBase::AEnemyAIBase()
 
 	SphereComponent->InitSphereRadius(30.f);
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	//SphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	SphereComponent->SetSimulatePhysics(false);
 	RootComponent = SphereComponent;
 
@@ -36,9 +35,6 @@ AEnemyAIBase::AEnemyAIBase()
 	MeshComponent->SetupAttachment(SphereComponent);
 
 	EnemyHealthComponent = CreateDefaultSubobject<UHealthComponentBase>(TEXT("EnemyHealthComponent"));
-
-	FloatingPawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovementComponent"));
-	FloatingPawnMovementComponent->MaxSpeed = 600.f;
 
 	LifeSpanAfterDeath = 3.0f;
 	DamageAmount = 5.0f;
@@ -58,13 +54,12 @@ void AEnemyAIBase::BeginPlay()
 
 void AEnemyAIBase::OnCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OTHER ACTOR %s"), *OtherActor->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("AEnemyAIBase::OnCollisionOverlap - OtherActor - %s"), *OtherActor->GetName());
 	ABasicEnemyAIC* AIC = Cast<ABasicEnemyAIC>(GetController());
 	ATurretHead* CurrentTurret = Cast<ATurretHead>(OtherActor);
 	if (CurrentTurret)
 	{
 		CurrentDamageTarget = CurrentTurret;
-		/*EnemyStatus = EnemyState::ATTACK;*/
 		if (AIC)
 		{
 			AIC->StartAttack();

@@ -31,7 +31,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float EnemyKnockbackAmount;
 
-	class ACharacter* ProjectileOwner;
+	class ATurretHead* ProjectileOwner;
 
 protected:
 	// Called when the game starts or when spawned
