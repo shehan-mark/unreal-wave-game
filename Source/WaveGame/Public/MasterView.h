@@ -72,8 +72,6 @@ public:
 
 	class UUserWidget* CurrentActiveWidget;
 
-	float PlayerScore;
-
 public:
 
 
@@ -113,9 +111,6 @@ protected:
 
 	UFUNCTION()
 	void BindPlayerEvents();
-
-	UFUNCTION()
-	void GetPlayerScore(bool Reset = false);
 
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 };

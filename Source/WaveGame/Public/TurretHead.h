@@ -51,25 +51,28 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 	class UHealthComponentBase* HealthComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class AForcePush> PushActor;
+
+	FTimerHandle TimerHandle_RestoreAbility;
+
+	/*
+		Events
+	*/
+	UPROPERTY()
+	float AbilityPowerLevel;
+
 	UPROPERTY()
 	FOnHealthUpdate OnHealthUpdate;
 
 	UPROPERTY()
 	FOnPlayerDied OnPlayerDied;
-	
+
 	UPROPERTY()
 	FOnPlayerScored OnPlayerScored;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class AForcePush> PushActor;
-
-	UPROPERTY()
-	float AbilityPowerLevel;
-
 	UPROPERTY()
 	FOnAbilityAmountUpdate OnAbilityAmountUpdate;
-
-	FTimerHandle TimerHandle_RestoreAbility;
 
 protected:
 
@@ -114,6 +117,7 @@ public:
 
 	void Reset();
 
+	UFUNCTION()
 	float GetScore();
 
 	void ResetPlayerScore();

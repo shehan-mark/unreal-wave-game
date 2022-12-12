@@ -48,25 +48,27 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 		issue resolved by casting like below. Dont know the difference
 		https://forums.unrealengine.com/t/c-casting-acharacter-child-pointer-to-aactor-does-not-work/405575
 	*/
+	/*
 	UBasicProjectileDamage* CustomDamageType = (UBasicProjectileDamage*)DamageType;
 	if (CustomDamageType)
 	{
-		//UE_LOG(LogTemp, Error, TEXT("UHealthComponentBase::HandleTakeAnyDamage CASTING SUCCESS"));
 	}
+	*/
 
 	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
-
+	
 	ATurretHead* PlayerRef = Cast<ATurretHead>(DamagedActor);
+	AEnemyAIBase* EnemyRef = Cast<AEnemyAIBase>(DamagedActor);
+	
 	if (PlayerRef)
 	{
 		PlayerRef->OnHealthUpdate.Broadcast(Health);
 	}
+
 	if (Health == 0.0f)
 	{
-		AEnemyAIBase* EnemyRef = Cast<AEnemyAIBase>(DamagedActor);
 		if (EnemyRef)
 		{
-			//UE_LOG(LogTemp, Error, TEXT("DAMAGE INSTIGATOR %s"), *InstigatedBy->GetName());
 			LetPlayerKnowEnemyKill(InstigatedBy);
 			EnemyRef->Die();
 		}
@@ -75,12 +77,8 @@ void UHealthComponentBase::HandleTakeAnyDamage(AActor* DamagedActor, float Damag
 		{
 			PlayerRef->Die();
 		}
-
 	}
 
-	//FString LogMessage = GetOwner()->GetName() + " " + FString::SanitizeFloat(Health);
-	// *FString because we need to convert that into character array
-	//UE_LOG(LogTemp, Log, TEXT("Health Changed: %s"), *LogMessage);
 }
 
 void UHealthComponentBase::ResetHealth()
@@ -95,6 +93,7 @@ void UHealthComponentBase::ResetHealth()
 
 void UHealthComponentBase::LetPlayerKnowEnemyKill(AController* InstigatedBy)
 {
+	//UE_LOG(LogTemp, Error, TEXT("DAMAGE INSTIGATED BY %s"), *InstigatedBy->GetName());
 	AWaveGamePlayerController* CurrentPlayerController = Cast<AWaveGamePlayerController>(InstigatedBy);
 	if (CurrentPlayerController)
 	{

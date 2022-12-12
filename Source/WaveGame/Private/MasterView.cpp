@@ -48,7 +48,6 @@ void UMasterView::NativeConstruct()
 		CurrentPlayerController->OnPlayerReady.AddDynamic(this, &UMasterView::BindPlayerEvents);
 	}
 
-	PlayerScore = 0.0f;
 	// intial menu
 	ViewMainMenu();
 }
@@ -98,7 +97,6 @@ void UMasterView::StartGame()
 	{
 		GameMode->DestroyAndStartOver();
 		// reseting player score
-		PlayerScore = 0.0f;
 		CurrentPlayerController->OwningPawn->ResetPlayerScore();
 	}
 	UpdateUIToState();
@@ -124,6 +122,7 @@ void UMasterView::GameOver()
 	UGameOverView* GameOverView = Cast<UGameOverView>(GameOver_WBP);
 	if (GameOverView)
 	{
+		float PlayerScore = CurrentPlayerController->OwningPawn->GetScore();
 		FText TextScore = FText::FromString(FString::SanitizeFloat(PlayerScore));
 		GameOverView->ScoreTextBlock_Value->SetText(TextScore);
 	}
@@ -172,21 +171,12 @@ void UMasterView::BindPlayerEvents()
 	if (CurrentPlayerController && IsValid(CurrentPlayerController->OwningPawn))
 	{
 		CurrentPlayerController->OwningPawn->OnPlayerDied.AddDynamic(this, &UMasterView::GameOver);
-		CurrentPlayerController->OwningPawn->OnPlayerScored.AddDynamic(this, &UMasterView::GetPlayerScore);
 	}
 }
 
 void UMasterView::HandleQuitGame()
 {
 	CurrentPlayerController->ConsoleCommand("quit");
-}
-
-void UMasterView::GetPlayerScore(bool Reset)
-{
-	if (CurrentPlayerController && IsValid(CurrentPlayerController->OwningPawn))
-	{
-		PlayerScore = CurrentPlayerController->OwningPawn->GetScore();
-	}
 }
 
 FReply UMasterView::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
