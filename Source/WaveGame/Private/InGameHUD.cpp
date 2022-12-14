@@ -28,7 +28,7 @@ void UInGameHUD::NativeConstruct()
 void UInGameHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	FText TextScore = FText::FromString(FString::SanitizeFloat(ParentViewRef->PlayerScore));
+	FText TextScore = FText::FromString(FString::SanitizeFloat(CurrentPlayerController->OwningPawn->GetScore()));
 	TextBlock_ScoreValue->SetText(TextScore);
 }
 

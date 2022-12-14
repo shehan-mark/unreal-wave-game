@@ -41,7 +41,7 @@ ABasicProjectile::ABasicProjectile()
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
 
-	EnemyKnockbackAmount = 200.0f;
+	EnemyKnockbackAmount = 100.0f;
 }
 
 // Called when the game starts or when spawned
@@ -67,12 +67,13 @@ void ABasicProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 	AEnemyAIBase* HitEnemy = Cast<AEnemyAIBase>(OtherActor);
 	if (HitEnemy)
 	{
+		/* Reduce velocity of the projectile to minimize the effect after hitting the enemy */
 		ProjectileMovement->Velocity = FVector(500.0f, 0.0f, 0.0f);
 		ProjectileMovement->UpdateComponentVelocity();
+
 		APlayerController* Ctrl = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 		if (Ctrl)
 		{
-			//UE_LOG(LogTemp, Error, TEXT("ABasicProjectile::OnHit GOTTA DAMAGE"));
 			UGameplayStatics::ApplyDamage(HitEnemy, 50.0f, Ctrl, this, DamageType);
 		}
 

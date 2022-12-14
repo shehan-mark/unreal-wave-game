@@ -22,18 +22,17 @@ AWaveGameMode::AWaveGameMode()
 
 void AWaveGameMode::StartGame()
 {
-	TArray<AActor*> PlayerPawn;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATurretHead::StaticClass(), PlayerPawn);
-	if (PlayerPawn.Num() == 0 && IsValid(SpawnPlayerTurret))
+	TArray<AActor*> PlayerTurret;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATurretHead::StaticClass(), PlayerTurret);
+	if (PlayerTurret.Num() == 0 && IsValid(PlayerTurretToSpawn))
 	{
 		FActorSpawnParameters SpawnParams;
-		ATurretHead* NewTurretHead = GetWorld()->SpawnActor<ATurretHead>(SpawnPlayerTurret, FVector(0.0f, 0.0f, 125.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
+		ATurretHead* NewTurretHead = GetWorld()->SpawnActor<ATurretHead>(PlayerTurretToSpawn, FVector(0.0f, 0.0f, 125.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
 		
 		AWaveGamePlayerController* CurrentPlayerController = Cast<AWaveGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 		
 		// it seems I dont have to call posses because this PreInitializeComponents method is being called as soon as I spawn the Pawn.
 		/*CurrentPlayerController->Possess(NewTurretHead);*/
-
 	}
 
 	PrepareForNextWave();
@@ -43,6 +42,7 @@ void AWaveGameMode::StartPlay()
 {
 	Super::StartPlay();
 
+	// for testing
 	//PrepareForNextWave();
 }
 
@@ -61,16 +61,33 @@ void AWaveGameMode::PrepareForNextWave()
 	GetWorldTimerManager().SetTimer(TimerHandle_NextWaveStart, this, &AWaveGameMode::StartWave, TimeBetweenWaves, false);	
 }
 
+/*
+*
+* Only will run logic when wave is in progress
+**/
 void AWaveGameMode::CheckWaveState()
 {
-	/*
-		only run check logic when a wave is in progress
-	*/
 	if (WaveStatus != WaveGameModeState::WAVEINPROGRESS)
 		return;
 
 	bool bIsAnyEnemyAlive = false;
-	for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
+	TArray<AActor*> EnemiesInWorld;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyAIBase::StaticClass(), EnemiesInWorld);
+
+	if (EnemiesInWorld.Num() > 0)
+	{
+		for (int i = 0; i < EnemiesInWorld.Num(); i++)
+		{
+			AEnemyAIBase* Enemy = Cast<AEnemyAIBase>(EnemiesInWorld[i]);
+			if (Enemy && Enemy->GetEnemyStatus() != EnemyState::DEAD)
+			{
+				bIsAnyEnemyAlive = true;
+				break;
+			}
+		}
+	}
+
+	/*for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
 	{
 		APawn* _Pawn = It->Get();
 		AEnemyAIBase* Enemy = Cast<AEnemyAIBase>(_Pawn);
@@ -79,7 +96,7 @@ void AWaveGameMode::CheckWaveState()
 			bIsAnyEnemyAlive = true;
 			break;
 		}
-	}
+	}*/
 
 	if (!bIsAnyEnemyAlive)
 	{
@@ -92,16 +109,12 @@ void AWaveGameMode::SpawnNewEnemy()
 {
 	if (IsValid(SpawnEnemy))
 	{
-		// spawn logic should go here
 		FActorSpawnParameters SpawnParams;
 
-		// finding spawn location in the circle
+		// finding random location/ point in a circle to spawn enemies.
 		float Theta = FMath::DegreesToRadians(FMath::RandRange(0.0f, 359.0f));
-		//UE_LOG(LogTemp, Warning, TEXT("AWaveGameMode::SpawnNewEnemy - Theta %f"), Theta);
 		float XCoordinate = FMath::Cos(Theta) * SpawnCircleRadius;
 		float YCoordinate = FMath::Sin(Theta) * SpawnCircleRadius;
-		/*UE_LOG(LogTemp, Warning, TEXT("AWaveGameMode::SpawnNewEnemy - XCoordinate %f"), XCoordinate);
-		UE_LOG(LogTemp, Warning, TEXT("AWaveGameMode::SpawnNewEnemy - YCoordinate %f"), YCoordinate);*/
 
 		AEnemyAIBase* SpawnedEnemy = GetWorld()->SpawnActor<AEnemyAIBase>(SpawnEnemy, FVector(XCoordinate, YCoordinate, 20.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
 
@@ -110,17 +123,15 @@ void AWaveGameMode::SpawnNewEnemy()
 
 		if (NumOfEnemiesToSpawn <= 0)
 		{
+			// done spawning for the current wave
 			GetWorldTimerManager().ClearTimer(TimerHandle_EnemySpawner);
 			WaveStatus = WaveGameModeState::WAVEINPROGRESS;
-			//EndWave();
 		}
 	}
 }
 
 void AWaveGameMode::StartWave()
 {
-	//UE_LOG(LogTemp, Error, TEXT("AWaveGameMode::StartWave - Starting Now..."));
-
 	EnemyWaveCount++;
 
 	NumOfEnemiesToSpawn = EnemyWaveMultiplier * EnemyWaveCount;
@@ -133,10 +144,9 @@ void AWaveGameMode::EndWave()
 {
 	WaveStatus = WaveGameModeState::WAVEENDED;
 
-	if (EnemyWaveCount >= MaxWaveCount - 1)
+	if (EnemyWaveCount >= MaxWaveCount)
 	{
 		WaveStatus = WaveGameModeState::GAMEOVER;
-		//UE_LOG(LogTemp, Error, TEXT("AWaveGameMode::EndWave - GAME OVER..."));
 	}
 	else
 	{
@@ -182,7 +192,8 @@ void AWaveGameMode::DestroyAndStartOver()
 
 void AWaveGameMode::RestartPlayer(AController* NewPlayer)
 {
-	// do nothing here for now
+	// I dont this parent logic to run.
+	// Since I'm manually spawning the player turret in StartGame
 	return;
 }
 

@@ -69,6 +69,7 @@ void ATurretHead::BeginPlay()
 
 void ATurretHead::MouseYaw(float Value)
 {
+	if (Value == 0.f) return;
 	APlayerController* OwnPlayerController = Cast<APlayerController>(Controller);
 	OwnPlayerController->AddYawInput(Value);
 }
@@ -97,22 +98,22 @@ FVector ATurretHead::GetNormalizedVector(FVector Input)
 void ATurretHead::CalculateTurretPitchVectors()
 {
 	// logging location of the object
-	FVector ActorLocation = GetActorLocation();
-	FVector AxisVector = FVector(ActorLocation.X, 0.0f, 0.0f);
+	//FVector ActorLocation = GetActorLocation();
+	//FVector AxisVector = FVector(ActorLocation.X, 0.0f, 0.0f);
 	//UE_LOG(LogTemp, Error, TEXT("ATurretHead::BeginPlay - Actor Location %f, %f, %f"), ActorLocation.X, ActorLocation.Y, ActorLocation.Z);
 
 
-	FVector NormalizedVector = GetNormalizedVector(GetActorForwardVector());
+	//FVector NormalizedVector = GetNormalizedVector(GetActorForwardVector());
 	//UE_LOG(LogTemp, Warning, TEXT("ATurretHead::BeginPlay - NormalizedVector %f, %f, %f"), NormalizedVector.X, NormalizedVector.Y, NormalizedVector.Z);
 
-	FVector ScaledVector = NormalizedVector * 500;
+	//FVector ScaledVector = NormalizedVector * 500;
 	//UE_LOG(LogTemp, Warning, TEXT("ATurretHead::BeginPlay - ScaledVector %f, %f, %f"), ScaledVector.X, ScaledVector.Y, ScaledVector.Z);
 
 
-	FVector ScaledVecotrHeight = ScaledVector + FVector(ScaledVector.X, ScaledVector.Y, ScaledVector.Z - 150.0f);
+	//FVector ScaledVecotrHeight = ScaledVector + FVector(ScaledVector.X, ScaledVector.Y, ScaledVector.Z - 150.0f);
 
-	DrawDebugLine(GetWorld(), ActorLocation, ActorLocation - ScaledVector, FColor::Emerald, false, 1, 0, 4);
-	DrawDebugLine(GetWorld(), ActorLocation, ActorLocation - ScaledVecotrHeight, FColor::Red, false, 1, 0, 4);
+	//DrawDebugLine(GetWorld(), ActorLocation, ActorLocation - ScaledVector, FColor::Emerald, false, 1, 0, 4);
+	//DrawDebugLine(GetWorld(), ActorLocation, ActorLocation - ScaledVecotrHeight, FColor::Red, false, 1, 0, 4);
 }
 
 FRotator ATurretHead::GetVectorForTurretDirection()
@@ -143,24 +144,14 @@ void ATurretHead::Fire()
 	{
 		UWorld* const World = GetWorld();
 		if (World == nullptr) return;
-		//UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire"));
 
 		const FVector SpawnLocation = CylinderMeshComponent->GetSocketLocation("ShootingPoint");
-		//UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire - ShootingPoint %f, %f, %f"), SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z);
-
-		//FRotator SpawnRotation = CylinderMeshComponent->GetSocketRotation("ShootingPoint");
-		DrawDebugSphere(GetWorld(), SpawnLocation, 5, 10, FColor(181, 0, 0), true, -1, 0, 2);
-
-		const FRotator SpawnRotationTwo = GetVectorForTurretDirection();
-
-		/*UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire - SpawnRotationOne %f, %f, %f"), SpawnRotationOne.Pitch, SpawnRotationOne.Yaw, SpawnRotationOne.Roll);
-		UE_LOG(LogTemp, Warning, TEXT("ATurretHead::Fire - SpawnRotationTwo %f, %f, %f"), SpawnRotationTwo.Pitch, SpawnRotationTwo.Yaw, SpawnRotationTwo.Roll);*/
-
-
+		//DrawDebugSphere(GetWorld(), SpawnLocation, 5, 10, FColor(181, 0, 0), true, -1, 0, 2);
+		const FRotator SpawnRotation = GetVectorForTurretDirection();
 		FActorSpawnParameters ActorSpawnParams;
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		ABasicProjectile* SpawnedProjectile = World->SpawnActor<ABasicProjectile>(ProjectileRef, SpawnLocation, SpawnRotationTwo, ActorSpawnParams);
+		ABasicProjectile* SpawnedProjectile = World->SpawnActor<ABasicProjectile>(ProjectileRef, SpawnLocation, SpawnRotation, ActorSpawnParams);
 		SpawnedProjectile->ProjectileOwner = this;
 		
 		if (FireSound != nullptr)
@@ -175,9 +166,6 @@ void ATurretHead::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//CalculateTurretPitchVectors();
-
-	//GetVectorForTurretDirection();
 }
 
 // Called to bind functionality to input
@@ -232,7 +220,7 @@ void ATurretHead::UpdateScore(bool Reset)
 	{
 		Score += 10.0f;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("UPDATED SCORE %f"), Score);
+	UE_LOG(LogTemp, Error, TEXT("UPDATED SCORE %f"), Score);
 }
 
 float ATurretHead::GetScore()
@@ -254,10 +242,10 @@ void ATurretHead::SpawnForcePush()
 		FActorSpawnParameters SpawnParams;
 		AForcePush* SpawnedPushActor = GetWorld()->SpawnActor<AForcePush>(PushActor, FVector(0.0f, 0.0f, 20.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
 
-		if (SpawnedPushActor != nullptr)
+		/*if (SpawnedPushActor != nullptr)
 		{
 			UE_LOG(LogTemp, Log, TEXT("PUSH ACTOR SPAWNED"));
-		}
+		}*/
 	}
 	AbilityPowerLevel = 0.0f;
 	OnAbilityAmountUpdate.Broadcast(AbilityPowerLevel);

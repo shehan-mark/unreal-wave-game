@@ -28,14 +28,8 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	class USphereComponent* SphereComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
-	class UFloatingPawnMovement* FloatingPawnMovementComponent;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 	class UHealthComponentBase* EnemyHealthComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	class UBehaviorTree* BehaviorTreeRef;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	class ATurretHead* CurrentDamageTarget;

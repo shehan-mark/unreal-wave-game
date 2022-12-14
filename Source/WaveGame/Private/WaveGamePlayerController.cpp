@@ -8,20 +8,6 @@
 #include "MasterView.h"
 #include "TurretHead.h"
 
-void AWaveGamePlayerController::AddPitchInput(float Val)
-{
-	RotationInput.Pitch += !IsLookInputIgnored() ? Val * InputPitchScale : 0.f;
-	
-	/*const float ScaledInput = Value * OwnPlayerController->InputYawScale;
-	const float YawSum = LocalControlRotation.Yaw + ScaledInput * -1.f;
-	if (YawSum > -90.f && YawSum < 90.f) OwnPlayerController->AddYawInput(Value);
-	else if (LocalControlRotation.Yaw > -90.f && LocalControlRotation.Yaw < 90.f) {
-		const float InputRemainder = FMath::Sign(Value) * FMath::Abs((90.f - FMath::Abs(LocalControlRotation.Yaw)) / OwnPlayerController->InputYawScale);
-		OwnPlayerController->AddYawInput(InputRemainder);
-	}*/
-
-}
-
 AWaveGamePlayerController::AWaveGamePlayerController()
 {
 }
@@ -38,20 +24,23 @@ void AWaveGamePlayerController::BeginPlay()
 	{
 		OwningPawn = TurretPawn;
 	}
-	
-	/*EnableInput(this);
-	SetTickableWhenPaused(true);*/
+}
 
+void AWaveGamePlayerController::AddPitchInput(float Val)
+{
+	RotationInput.Pitch += !IsLookInputIgnored() ? Val * InputPitchScale : 0.f;
 }
 
 void AWaveGamePlayerController::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
 }
 
 void AWaveGamePlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
+	// below will handle only pause. unpause is handled in the Masterview. Because at that time focus is on the UI not Playercontroller
 	FInputActionBinding& PauseBinding = InputComponent->BindAction("Pause", IE_Pressed, this, &AWaveGamePlayerController::BroadcastEscape);
 	PauseBinding.bConsumeInput = true;
 	PauseBinding.bExecuteWhenPaused = true;
@@ -65,7 +54,6 @@ void AWaveGamePlayerController::BroadcastEscape()
 void AWaveGamePlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
-	//UE_LOG(LogTemp, Error, TEXT("PLAYER CONTROLLER POSSES PAWN - %s"), *aPawn->GetName());
 	ATurretHead* TurretPawn = Cast<ATurretHead>(aPawn);
 	if (TurretPawn)
 	{

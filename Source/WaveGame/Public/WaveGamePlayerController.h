@@ -25,23 +25,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UMasterView> MasterViewRef;
 
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<class UUserWidget> TestingWidget;
-
 	class UMasterView* SpawnedMasterView;
 
 	UPROPERTY()
 	FOnPressEscape OnPressEscape;
 
 	UPROPERTY()
-	class UUserWidget* SpawnedWidget;
-
-	UPROPERTY()
 	class ATurretHead* OwningPawn;
 
-	UPROPERTY(EditDefaultsOnly, Category = "GameMode");
-	TSubclassOf<class ATurretHead> SpawnPlayerTurret;
-
+	/*
+	* This event is to let the Masterview know that the new/ spawned turret is ready to again rebind events
+	*/
 	UPROPERTY()
 	FOnPlayerReady OnPlayerReady;
 

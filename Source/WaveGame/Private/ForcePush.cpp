@@ -11,7 +11,7 @@
 AForcePush::AForcePush()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 
@@ -37,13 +37,6 @@ void AForcePush::BeginPlay()
 	this->SetLifeSpan(SpawnedLifeTime);
 }
 
-// Called every frame
-void AForcePush::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void AForcePush::StartPush(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AEnemyAIBase* HitEnemy = Cast<AEnemyAIBase>(OtherActor);
@@ -52,7 +45,9 @@ void AForcePush::StartPush(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		FVector EnemyCurentLocation = OtherActor->GetActorLocation();
 		FVector DamageCauserLocation = GetActorLocation();
 
-		FVector Dir = EnemyCurentLocation - FVector(0.0f, 0.0f, EnemyCurentLocation.Z);
+		FVector PushActorLocation = GetActorLocation();
+
+		FVector Dir = EnemyCurentLocation - FVector(PushActorLocation.X, PushActorLocation.Y, EnemyCurentLocation.Z);
 		Dir.Normalize();
 
 		Dir *= PushBackUnits;

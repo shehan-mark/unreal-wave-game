@@ -22,19 +22,16 @@
 
 ABasicEnemyAIC::ABasicEnemyAIC()
 {
-	bLoggsEnabled = false;
-
 	//BlackBoardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackBoardComponent"));
 
 	// this is what tells our behavior tree what to do
 	//BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
 
-	TargetPointReachThreshold = 50.0f;
+	TargetPointReachThreshold = 100.f;
+	AttackRadius = 150.0f;
 	MovementSpeed = 150.f;
 	
 	bPushingBack = false;
-	// bShouldStopMovement = false;
-	// bEnemyReachedCurrentTarget = false;
 }
 
 void ABasicEnemyAIC::Tick(float DeltaTime)
@@ -91,11 +88,22 @@ void ABasicEnemyAIC::FindAndMakeTarget(float DeltaTime)
 
 	CurrentTargetActor = Turrets[0];
 	CurrentTargetActorLKP = CurrentTargetActor->GetActorLocation();
+
+	float EnemyToAttackTargetDistance = GetEnemyToTargetPointLength(CurrentTargetActorLKP);
+	//UE_LOG(LogTemp, Error, TEXT("EnemyToAttackTargetDistance, %f"), EnemyToAttackTargetDistance);
+	bool bCurrentTargetReached = EnemyToAttackTargetDistance < AttackRadius;
+
 	// check if current target is reached
 	if (NextTargetPoint.IsZero() || CheckIfCurrentTargetPointReached())
 	{
 		LastStartingLocation = CurrentPawn->GetActorLocation();
 		NextTargetPoint = CalculateNextPathPoint();
+	}
+
+	if (bCurrentTargetReached)
+	{
+		NextTargetPoint = FVector(CurrentTargetActorLKP.X, CurrentTargetActorLKP.Y, CurrentPawn->GetActorLocation().Z);
+		//DrawDebugDirectionalArrow(GetWorld(), CurrentPawn->GetActorLocation(), NextTargetPoint, 25.0f, FColor::Blue, true, 3.0f);
 	}
 	
 	UpdateEnemyLookRotation(DeltaTime);
@@ -130,7 +138,7 @@ FVector ABasicEnemyAIC::CalculateNextPathPoint()
 		{
 			//DrawDebugSphere(GetWorld(), NavigationPath->PathPoints[i], 20, 5, FColor(181, 0, 0), true, -1, 0, 2);
 			PathPoint = FVector(NavigationPath->PathPoints[i].X, NavigationPath->PathPoints[i].Y, LastStartingLocation.Z);
-			if (GetEnemyToTargetPointLength(PathPoint) > TargetPointReachThreshold)
+			if (GetEnemyToTargetPointLength(PathPoint) > 50.f)
 			{
 				break;
 			}
@@ -146,6 +154,7 @@ void ABasicEnemyAIC::MovePawnManually(float DeltaTime)
 {
 	if (!CheckIfCurrentTargetPointReached())
 	{
+		CurrentPawn->SetEnemyStatus(EnemyState::MOVING);
 		FVector DiffVector = NextTargetPoint - CurrentPawn->GetActorLocation();
 		float Magnitude = FMath::Sqrt(FMath::Pow(DiffVector.X, 2) + FMath::Pow(DiffVector.Y, 2) + FMath::Pow(DiffVector.Y, 2));
 		FVector NormalizedVector = FVector(DiffVector.X / Magnitude, DiffVector.Y / Magnitude, DiffVector.Z / Magnitude);
@@ -159,13 +168,13 @@ void ABasicEnemyAIC::UpdateNextPath(FVector StartLocation, FVector EndLocation)
 {
 	LastStartingLocation = StartLocation;
 	NextTargetPoint = EndLocation;
-
 }
 
 bool ABasicEnemyAIC::CheckIfCurrentTargetPointReached()
 {
-	float TP = GetEnemyToTargetPointLength(NextTargetPoint);
-	if (TP < TargetPointReachThreshold) return true;
+
+	float LengthToCurrentTargetPoint = GetEnemyToTargetPointLength(NextTargetPoint);
+	if (LengthToCurrentTargetPoint < TargetPointReachThreshold) return true;
 	return false;
 }
 
@@ -183,13 +192,14 @@ void ABasicEnemyAIC::ResetPushBack()
 
 void ABasicEnemyAIC::StartAttack()
 {
+	CurrentPawn->SetEnemyStatus(EnemyState::ATTACK);
 	GetWorldTimerManager().SetTimer(TimerHandle_EnemyAttack, this, &ABasicEnemyAIC::AttackTarget, CurrentPawn->AttackRate, true, 0.0f);
 }
 
 void ABasicEnemyAIC::AttackTarget()
 {
 	float DistanceToAttack = GetEnemyToTargetPointLength(FVector(CurrentTargetActorLKP.X, CurrentTargetActorLKP.Y, CurrentPawn->GetActorLocation().Z));
-	bool bCloseEnoughToDoDamage = DistanceToAttack <= 150.f;
+	bool bCloseEnoughToDoDamage = DistanceToAttack <= AttackRadius;
 	if (bCloseEnoughToDoDamage && CurrentPawn->CurrentDamageTarget && CurrentPawn->CurrentDamageTarget->GetTurretStatus() != TurretState::DEAD)
 	{
 		CurrentPawn->DoDamage();
@@ -197,9 +207,6 @@ void ABasicEnemyAIC::AttackTarget()
 	else
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandle_EnemyAttack);
-		//CurrentPawn->SetEnemyStatus(EnemyState::IDLE);
-		bEnemyReachedCurrentTarget = false;
-		bShouldStopMovement = false;
 	}
 }
 
